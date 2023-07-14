@@ -1,7 +1,9 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#define MEMORY_SIZE 65536 // Z80 has a 16-bit address bus, so 65536 addresses (64KB) are available
+
+// Z80 has a 16-bit address bus, so 65536 addresses (64KB) are available
+#define MEMORY_SIZE 65536
 
 //Struct represents the flags in the F register
 typedef struct {
