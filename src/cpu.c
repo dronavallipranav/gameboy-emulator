@@ -1,20 +1,14 @@
 #include <stdint.h>
 #include <stdio.h>
-#include <cpu.h>
-
-int main(){
-
-  Z80_State *cpu;
-  initCPU(cpu);
-
-}
+#include "../include/cpu.h"
+#include <stdlib.h>
+#include <string.h>
 
 void initCPU(Z80_State *cpu){
+    printf("HelloCPU\n");
     //dynamically allocate and init memory space to 0
-    cpu -> memory = calloc(0,MEMORY_SIZE);
-    if(cpu -> memory == NULL){
-      printf("unable to allocate space for memory space");
-    }
+    memset(cpu->memory, 0, sizeof(cpu->memory));
+
     // Initialize registers to zero
     cpu->A = 0;
     cpu->B = 0;

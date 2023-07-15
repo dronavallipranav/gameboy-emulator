@@ -1,3 +1,5 @@
+#ifndef CPU_H
+#define CPU_H
 #include<stdint.h>
 
 // Z80 has a 16-bit address bus, so 65536 addresses (64KB) are available
@@ -18,7 +20,7 @@ typedef struct {
 //Struct represents the state of the CPU and Memory Space
 typedef struct {
   //Memory Space of Z80
-  uint8_t *memory; 
+  uint8_t memory[MEMORY_SIZE]; 
   //8-bit registers
   uint8_t A, B, C, D, E, H, L, I, R; 
   union {
@@ -31,3 +33,8 @@ typedef struct {
   uint16_t IX, IY, SP, PC; 
 
 } Z80_State;
+
+void initCPU(Z80_State *cpu);
+
+
+#endif
