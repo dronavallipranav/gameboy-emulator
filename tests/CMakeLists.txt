@@ -1,7 +1,12 @@
-# Add the directories where the compiler should look for additional include files
-include_directories(${CUNIT_INCLUDE_DIRS})
+# Specify where the CUnit headers are
+include_directories(/opt/homebrew/Cellar/cunit/2.1-3/include)
+# Specify where the CUnit libraries are
+link_directories(/opt/homebrew/Cellar/cunit/2.1-3/lib)
 
-# Add an executable target for the tests
+# Add the directories where the compiler should look for additional include files
+include_directories(../Instructions)
+
+# Add the test executable
 add_executable(z80_tests
     test_arithmetic.c
 )
@@ -9,11 +14,6 @@ add_executable(z80_tests
 # Link the test executable with the library and CUnit
 target_link_libraries(z80_tests
     z80_lib
-    ${CUNIT_LIBRARIES}
+    cunit  # CUnit library
 )
 
-# Enable testing
-enable_testing()
-
-# Add the test to CTest's test list
-add_test(NAME z80_tests COMMAND z80_tests)
