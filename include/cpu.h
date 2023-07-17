@@ -2,7 +2,7 @@
 #define CPU_H
 #include<stdint.h>
 
-// Z80 has a 16-bit address bus, so 65536 addresses (64KB) are available
+//64KB of memory in Z80
 #define MEMORY_SIZE 65536
 
 //Struct represents the flags in the F register
@@ -18,21 +18,21 @@ typedef struct {
 } Flags;
 
 typedef struct {
-  uint8_t B, C; // 8-bit BC registers
+  uint8_t B, C; 
 } BC_Register;
 
 typedef struct {
-  uint8_t D, E; // 8-bit DE registers
+  uint8_t D, E; 
 } DE_Register;
 
 typedef struct {
-  uint8_t H, L; // 8-bit HL registers
+  uint8_t H, L; 
 } HL_Register;
 
 typedef struct {
-  uint8_t A; // 8-bit A register
+  uint8_t A; 
   union {
-    uint8_t F; // Full 8-bit F register
+    uint8_t F; 
     Flags flags; // Individual flags
   };
 } AF_Register;
@@ -42,7 +42,7 @@ typedef struct {
   uint8_t memory[MEMORY_SIZE]; 
   //8-bit registers
   uint8_t I, R;
-   
+
   //Unions represent 16-bit registers as well as 8 bit pairs that make them up
   union {
     AF_Register AF; 

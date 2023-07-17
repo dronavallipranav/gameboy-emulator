@@ -4,7 +4,8 @@
             "name": "Mac",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/opt/homebrew/Cellar/cunit/2.1-3/include"
+                "/opt/homebrew/Cellar/cunit/2.1-3/include",
+                "${workspaceFolder}/include"
             ],
             "defines": [],
             "macFrameworkPath": [

@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include "cpu.h"
+#include <cpu.h>
 
 void add8(Z80_State *cpu, uint8_t reg);
 
