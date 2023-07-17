@@ -11,6 +11,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_D
 # Add the source files to a library
 add_library(z80_lib
     src/cpu.c
+    src/cartridge.c
     ${PROJECT_SOURCE_DIR}/src/Instructions/arithmetic.c
 )
 

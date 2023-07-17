@@ -2,39 +2,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-void load_cartridge(Cartridge *cartridge, const char* filename) {
-
-    FILE* file = fopen(filename, "rb");
-    if (file == NULL) {
-        fprintf(stderr, "Failed to open file %s\n", filename);
-        exit(1);
-    }
-
-    // Get the file size.
-    fseek(file, 0, SEEK_END);
-    long file_size = ftell(file);
-    fseek(file, 0, SEEK_SET);
-
-    // Allocate memory for the ROM.
-    cartridge->rom = (uint8_t*) malloc(file_size);
-    if (cartridge->rom == NULL) {
-        fprintf(stderr, "Failed to allocate memory for ROM\n");
-        exit(1);
-    }
-    cartridge->rom_size = file_size;
-
-    //Load the ROM data into memory.
-    fread(cartridge->rom, file_size, 1, file);
-
-    fclose(file);
-
-    allocate_ram(cartridge);
-    //MBC1 specific
-    cartridge->current_rom_bank = 1; 
-    cartridge->current_ram_bank = 0;
-    cartridge->ram_enabled = 0;
-
-}
 /*
 * Function looks at byte 0x0149 in cartridge header to allocate RAM size in cartridge (if exists)
 */
@@ -69,4 +36,39 @@ void allocate_ram(Cartridge* cartridge) {
             exit(1);
     }
 }
+
+void load_cartridge(Cartridge *cartridge, const char* filename) {
+
+    FILE* file = fopen(filename, "rb");
+    if (file == NULL) {
+        fprintf(stderr, "Failed to open file %s\n", filename);
+        exit(1);
+    }
+
+    // Get the file size.
+    fseek(file, 0, SEEK_END);
+    long file_size = ftell(file);
+    fseek(file, 0, SEEK_SET);
+
+    // Allocate memory for the ROM.
+    cartridge->rom = (uint8_t*) malloc(file_size);
+    if (cartridge->rom == NULL) {
+        fprintf(stderr, "Failed to allocate memory for ROM\n");
+        exit(1);
+    }
+    cartridge->rom_size = file_size;
+
+    //Load the ROM data into memory.
+    fread(cartridge->rom, file_size, 1, file);
+
+    fclose(file);
+
+    allocate_ram(cartridge);
+    //MBC1 specific
+    cartridge->current_rom_bank = 1; 
+    cartridge->current_ram_bank = 0;
+    cartridge->ram_enabled = 0;
+
+}
+
 

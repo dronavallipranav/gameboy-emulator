@@ -80,5 +80,21 @@ int add_arithmetic_tests(CU_pSuite suite) {
         return -1; 
     }
 
+    if (NULL == CU_add_test(suite, "Test Add16", test_addImm)) {
+        return -1; 
+    }
+
+    if (NULL == CU_add_test(suite, "Test Add8", test_sub8)) {
+        return -1; 
+    }
+
+    if (NULL == CU_add_test(suite, "Test Add16", test_sub16)) {
+        return -1; 
+    }
+
+    if (NULL == CU_add_test(suite, "Test Add16", test_subImm)) {
+        return -1; 
+    }
+
     return 0;
 }
