@@ -65,6 +65,9 @@ typedef struct {
   // 16-bit registers
   uint16_t IX, IY, SP, PC; 
 
+  //TO DO: IMPLEMENT CARTRIDGE MBC MATCHING FOR MMU
+  uint16_t MBC;
+
 } Z80_State;
 
 

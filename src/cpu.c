@@ -24,6 +24,7 @@ void initCPU(Z80_State *cpu){
     cpu->IY = 0;
     cpu->SP = 0;
     cpu->PC = 0;
+    cpu -> MBC = 1;
     cpu->interrupt = 0;
 
     // Initialize flags to zero
