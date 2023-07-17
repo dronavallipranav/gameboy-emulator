@@ -11,6 +11,8 @@ void test_load_cartridge() {
 
     // The RAM size for Pokemon Red is 32KB.
     CU_ASSERT_EQUAL(cartridge.ram_size, 32 * 1024);
+
+    CU_ASSERT_EQUAL(cartridge.ram_enabled, 0);
 }
 
 int add_cartridge_tests(CU_pSuite suite) {
