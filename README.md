@@ -14,6 +14,7 @@ To build:
 
 ```bash
 $cmake ..
+$make
 ```
 Running the test suite:
 ```bash
