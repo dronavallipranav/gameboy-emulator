@@ -5,21 +5,21 @@
 #include <string.h>
 
 void initCPU(Z80_State *cpu){
-    printf("HelloCPU\n");
-    //dynamically allocate and init memory space to 0
+  
+    //init memory space to 0
     memset(cpu->memory, 0, sizeof(cpu->memory));
 
     // Initialize registers to zero
-    cpu->A = 0;
-    cpu->B = 0;
-    cpu->C = 0;
-    cpu->D = 0;
-    cpu->E = 0;
-    cpu->H = 0;
-    cpu->L = 0;
+    cpu->AF.A = 0;
+    cpu -> AF.F = 0;
+    cpu->BC.B = 0;
+    cpu->BC.C = 0;
+    cpu->DE.D = 0;
+    cpu->DE.E = 0;
+    cpu->HL.H = 0;
+    cpu->HL.L = 0;
     cpu->I = 0;
     cpu->R = 0;
-    cpu->F = 0;
     cpu->IX = 0;
     cpu->IY = 0;
     cpu->SP = 0;
@@ -27,14 +27,14 @@ void initCPU(Z80_State *cpu){
     cpu->interrupt = 0;
 
     // Initialize flags to zero
-    cpu->flags.S = 0;
-    cpu->flags.Z = 0;
-    cpu->flags.fifth = 0;
-    cpu->flags.H = 0;
-    cpu->flags.third = 0;
-    cpu->flags.PV = 0;
-    cpu->flags.N = 0;
-    cpu->flags.C = 0;
+    cpu->AF.flags.S = 0;
+    cpu->AF.flags.Z = 0;
+    cpu->AF.flags.fifth = 0;
+    cpu->AF.flags.H = 0;
+    cpu->AF.flags.third = 0;
+    cpu->AF.flags.PV = 0;
+    cpu->AF.flags.N = 0;
+    cpu->AF.flags.C = 0;
 
 }
 

@@ -17,15 +17,48 @@ typedef struct {
   uint8_t C : 1; // Carry
 } Flags;
 
-//Struct represents the state of the CPU and Memory Space
+typedef struct {
+  uint8_t B, C; // 8-bit BC registers
+} BC_Register;
+
+typedef struct {
+  uint8_t D, E; // 8-bit DE registers
+} DE_Register;
+
+typedef struct {
+  uint8_t H, L; // 8-bit HL registers
+} HL_Register;
+
+typedef struct {
+  uint8_t A; // 8-bit A register
+  union {
+    uint8_t F; // Full 8-bit F register
+    Flags flags; // Individual flags
+  };
+} AF_Register;
+
 typedef struct {
   //Memory Space of Z80
   uint8_t memory[MEMORY_SIZE]; 
   //8-bit registers
-  uint8_t A, B, C, D, E, H, L, I, R; 
+  uint8_t I, R;
+   
+  //Unions represent 16-bit registers as well as 8 bit pairs that make them up
   union {
-    uint8_t F; // Full 8-bit F register
-    Flags flags; // Individual flags
+    AF_Register AF; 
+    uint16_t AF_pair; 
+  };
+  union {
+    BC_Register BC; 
+    uint16_t BC_pair; 
+  };
+  union {
+    DE_Register DE; 
+    uint16_t DE_pair; 
+  };
+  union {
+    HL_Register HL; 
+    uint16_t HL_pair; 
   };
   uint8_t interrupt;
 
@@ -33,6 +66,7 @@ typedef struct {
   uint16_t IX, IY, SP, PC; 
 
 } Z80_State;
+
 
 void initCPU(Z80_State *cpu);
 
