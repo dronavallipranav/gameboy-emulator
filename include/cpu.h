@@ -48,6 +48,8 @@ typedef struct {
     AF_Register AF; 
     uint16_t AF_pair; 
   };
+  uint8_t (*getA)(void);
+  void (*setA)(uint8_t val);
   union {
     BC_Register BC; 
     uint16_t BC_pair; 
