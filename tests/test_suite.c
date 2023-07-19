@@ -3,6 +3,7 @@
 #include <CUnit/Automated.h>
 #include "test_arithmetic.c"
 #include "test_cartridge.c"
+#include "test_movement.c"
 
 int main() {
     CU_pSuite suite = NULL;
@@ -22,6 +23,11 @@ int main() {
     }
 
     if (add_cartridge_tests(suite) != 0) {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
+
+    if (add_loadReg_tests(suite) != 0) {
         CU_cleanup_registry();
         return CU_get_error();
     }

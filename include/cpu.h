@@ -5,7 +5,6 @@
 //64KB of memory in Z80
 #define MEMORY_SIZE 65536
 
-//Struct represents the flags in the F register
 typedef struct {
   uint8_t S : 1; // Sign
   uint8_t Z : 1; // Zero
@@ -37,7 +36,7 @@ typedef struct {
   };
 } AF_Register;
 
-typedef struct {
+typedef struct Z80_State {
   //Memory Space of Z80
   uint8_t memory[MEMORY_SIZE]; 
   //8-bit registers
@@ -49,67 +48,65 @@ typedef struct {
     uint16_t AF_pair; 
   };
 
-  uint8_t (*getA)(void);
-  void (*setA)(uint8_t val);
-  uint8_t (*getF)(void);
-  void (*setF)(uint8_t val);
-  uint16_t (*getAF)(void);
-  void (*setAF)(uint16_t val);
+  uint8_t (*getA)(struct Z80_State *);
+  void (*setA)(struct Z80_State *, uint8_t val);
+  uint8_t (*getF)(struct Z80_State *);
+  void (*setF)(struct Z80_State *, uint8_t val);
+  uint16_t (*getAF)(struct Z80_State *);
+  void (*setAF)(struct Z80_State *, uint16_t val);
 
   union {
     BC_Register BC; 
     uint16_t BC_pair; 
   };
-  uint8_t (*getB)(void);
-  void (*setB)(uint8_t val);
-  uint8_t (*getC)(void);
-  void (*setC)(uint8_t val);
-  uint16_t (*getBC)(void);
-  void (*setBC)(uint16_t val);
+  uint8_t (*getB)(struct Z80_State *);
+  void (*setB)(struct Z80_State *, uint8_t val);
+  uint8_t (*getC)(struct Z80_State *);
+  void (*setC)(struct Z80_State *, uint8_t val);
+  uint16_t (*getBC)(struct Z80_State *);
+  void (*setBC)(struct Z80_State *, uint16_t val);
 
   union {
     DE_Register DE; 
     uint16_t DE_pair; 
   };
-  uint8_t (*getD)(void);
-  void (*setD)(uint8_t val);
-  uint8_t (*getE)(void);
-  void (*setE)(uint8_t val);
-  uint16_t (*getDE)(void);
-  void (*setDE)(uint16_t val);
+  uint8_t (*getD)(struct Z80_State *);
+  void (*setD)(struct Z80_State *, uint8_t val);
+  uint8_t (*getE)(struct Z80_State *);
+  void (*setE)(struct Z80_State *, uint8_t val);
+  uint16_t (*getDE)(struct Z80_State *);
+  void (*setDE)(struct Z80_State *, uint16_t val);
 
   union {
     HL_Register HL; 
     uint16_t HL_pair; 
   };
-  uint8_t (*getH)(void);
-  void (*setH)(uint8_t val);
-  uint8_t (*getL)(void);
-  void (*setL)(uint8_t val);
-  uint16_t (*getHL)(void);
-  void (*setHL)(uint16_t val);
+  uint8_t (*getH)(struct Z80_State *);
+  void (*setH)(struct Z80_State *, uint8_t val);
+  uint8_t (*getL)(struct Z80_State *);
+  void (*setL)(struct Z80_State *, uint8_t val);
+  uint16_t (*getHL)(struct Z80_State *);
+  void (*setHL)(struct Z80_State *, uint16_t val);
   
   uint8_t interrupt;
 
   // 16-bit registers
   uint16_t IX, IY, SP, PC; 
   
-  uint16_t (*getIX)(void);
-  void (*setIX)(uint16_t val);
-  uint16_t (*getIY)(void);
-  void (*setIY)(uint16_t val);
-   uint16_t (*getSP)(void);
-  void (*setSP)(uint16_t val);
-  uint16_t (*getPC)(void);
-  void (*setPC)(uint16_t val);
+  uint16_t (*getIX)(struct Z80_State *);
+  void (*setIX)(struct Z80_State *, uint16_t val);
+  uint16_t (*getIY)(struct Z80_State *);
+  void (*setIY)(struct Z80_State *, uint16_t val);
+  uint16_t (*getSP)(struct Z80_State *);
+  void (*setSP)(struct Z80_State *, uint16_t val);
+  uint16_t (*getPC)(struct Z80_State *);
+  void (*setPC)(struct Z80_State *, uint16_t val);
 
   //TO DO: IMPLEMENT CARTRIDGE MBC MATCHING FOR MMU
   uint16_t MBC;
 
 } Z80_State;
 
-
 void initCPU(Z80_State *cpu);
-
 
 #endif
