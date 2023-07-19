@@ -4,6 +4,98 @@
 #include <stdlib.h>
 #include <string.h>
 
+uint8_t getA(Z80_State *cpu) {
+  return cpu->AF.A;
+}
+
+void setA(Z80_State *cpu, uint8_t val) {
+  cpu->AF.A = val;
+}
+
+uint8_t getF(Z80_State *cpu) {
+  return cpu->AF.F;
+}
+
+void setB(Z80_State *cpu, uint8_t val) {
+  cpu->BC.B = val;
+}
+
+uint8_t getB(Z80_State *cpu) {
+  return cpu->BC.B;
+}
+
+void setC(Z80_State *cpu, uint8_t val) {
+  cpu->BC.C = val;
+}
+
+uint8_t getC(Z80_State *cpu) {
+  return cpu->BC.C;
+}
+
+void setD(Z80_State *cpu, uint8_t val) {
+  cpu->DE.D = val;
+}
+
+uint8_t getD(Z80_State *cpu) {
+  return cpu->DE.D;
+}
+
+uint8_t getE(Z80_State *cpu) {
+  return cpu->DE.E;
+}
+
+void setE(Z80_State *cpu, uint8_t val) {
+  cpu->DE.E = val;
+}
+
+uint8_t getH(Z80_State *cpu) {
+  return cpu->HL.H;
+}
+
+void setH(Z80_State *cpu, uint8_t val) {
+  cpu->HL.H = val;
+}
+
+uint8_t getL(Z80_State *cpu) {
+  return cpu->HL.L;
+}
+
+void setL(Z80_State *cpu, uint8_t val) {
+  cpu->HL.L = val;
+}
+
+uint16_t getAF(Z80_State *cpu) {
+  return cpu->AF_pair;
+}
+
+void setAF(Z80_State *cpu, uint16_t val) {
+  cpu->AF_pair = val;
+}
+
+uint16_t getBC(Z80_State *cpu) {
+  return cpu->BC_pair;
+}
+
+void setBC(Z80_State *cpu, uint16_t val) {
+  cpu->BC_pair = val;
+}
+
+uint16_t getDE(Z80_State *cpu) {
+  return cpu->DE_pair;
+}
+
+void setDE(Z80_State *cpu, uint16_t val) {
+  cpu->DE_pair = val;
+}
+
+uint16_t getHL(Z80_State *cpu) {
+  return cpu->HL_pair;
+}
+
+void setHL(Z80_State *cpu, uint16_t val) {
+  cpu->HL_pair = val;
+}
+
 void initCPU(Z80_State *cpu){
   
     //init memory space to 0
@@ -36,6 +128,27 @@ void initCPU(Z80_State *cpu){
     cpu->AF.flags.PV = 0;
     cpu->AF.flags.N = 0;
     cpu->AF.flags.C = 0;
+    
 
+
+cpu->getA = getA;
+cpu->setA = setA;
+cpu->getB = getB;
+cpu->setB = setB;
+cpu->getC = getC;
+cpu->setC = setC;
+cpu->getD = getD;
+cpu->setD = setD;
+cpu->getE = getE;
+cpu->setE = setE;
+cpu->getH = getH;
+cpu->setH = setH;
+cpu->getL = getL;
+cpu->setL = setL;
+
+cpu->getHL = getHL;
+cpu->setHL = setHL;
+
+ 
 }
 

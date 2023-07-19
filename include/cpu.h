@@ -48,24 +48,60 @@ typedef struct {
     AF_Register AF; 
     uint16_t AF_pair; 
   };
+
   uint8_t (*getA)(void);
   void (*setA)(uint8_t val);
+  uint8_t (*getF)(void);
+  void (*setF)(uint8_t val);
+  uint16_t (*getAF)(void);
+  void (*setAF)(uint16_t val);
+
   union {
     BC_Register BC; 
     uint16_t BC_pair; 
   };
+  uint8_t (*getB)(void);
+  void (*setB)(uint8_t val);
+  uint8_t (*getC)(void);
+  void (*setC)(uint8_t val);
+  uint16_t (*getBC)(void);
+  void (*setBC)(uint16_t val);
+
   union {
     DE_Register DE; 
     uint16_t DE_pair; 
   };
+  uint8_t (*getD)(void);
+  void (*setD)(uint8_t val);
+  uint8_t (*getE)(void);
+  void (*setE)(uint8_t val);
+  uint16_t (*getDE)(void);
+  void (*setDE)(uint16_t val);
+
   union {
     HL_Register HL; 
     uint16_t HL_pair; 
   };
+  uint8_t (*getH)(void);
+  void (*setH)(uint8_t val);
+  uint8_t (*getL)(void);
+  void (*setL)(uint8_t val);
+  uint16_t (*getHL)(void);
+  void (*setHL)(uint16_t val);
+  
   uint8_t interrupt;
 
   // 16-bit registers
   uint16_t IX, IY, SP, PC; 
+  
+  uint16_t (*getIX)(void);
+  void (*setIX)(uint16_t val);
+  uint16_t (*getIY)(void);
+  void (*setIY)(uint16_t val);
+   uint16_t (*getSP)(void);
+  void (*setSP)(uint16_t val);
+  uint16_t (*getPC)(void);
+  void (*setPC)(uint16_t val);
 
   //TO DO: IMPLEMENT CARTRIDGE MBC MATCHING FOR MMU
   uint16_t MBC;
