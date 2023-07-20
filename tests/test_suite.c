@@ -36,6 +36,8 @@ int main() {
 
      if (CU_get_number_of_failures() == 0) {
         printf("All tests passed\n");
+    }else{
+        printf("tests failed");
     }
 
     CU_cleanup_registry();

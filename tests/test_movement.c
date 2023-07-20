@@ -13,13 +13,25 @@ void test_loadReg() {
     loadReg(&cpu, 0x78);
     CU_ASSERT_EQUAL(cpu.getA(&cpu), 0xB0);
     CU_ASSERT_EQUAL(cpu.getB(&cpu), 0xB0); 
+
+    
+    //Test LOAD C, (HL) (opcode 0x4E)
+    cpu.setHL(&cpu, 20);
+    cpu.memory[cpu.HL_pair] = 15;
+    loadReg(&cpu, 0x4E);
+    printf("%hu\n", cpu.HL_pair);
+    printf("%hhu\n", cpu.memory[cpu.HL_pair]);
+    printf("%hhu\n", cpu.getC(&cpu));
+    CU_ASSERT_EQUAL(cpu.getC(&cpu), 15);
     
 }
+
+
 
 int add_loadReg_tests(CU_pSuite suite) {
     if (NULL == CU_add_test(suite, "Test LoadReg", test_loadReg)) {
         return -1;
     }
-
+    
     return 0;
 }
