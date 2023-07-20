@@ -1,10 +1,10 @@
 #include <movement.h>
 #include <stdbool.h>
-
+#include <stdio.h>
  void loadImm(Z80_State *cpu, void (*setReg)(Z80_State *, uint8_t), uint8_t imm){
     setReg(cpu,imm);
  }
- void loadMem(Z80_State *cpu, void (*setReg)(Z80_State *, uint8_t), uint8_t offset){
+ void loadMem(Z80_State *cpu, void (*setReg)(Z80_State *, uint8_t), uint16_t offset){
     uint8_t val = cpu -> memory[offset];
     setReg(cpu, val);
  }
@@ -45,10 +45,73 @@
         break;
         case 0x7E:
         setReg = cpu->setA;
-        loadMem(cpu, setReg, cpu->getHL);
+        loadMem(cpu, setReg, cpu->HL_pair);
+        status = false;
+        break;
+
+        case 0x40:
+        setReg = cpu->setB;  
+        getReg = cpu->getB;
+        break;
+        case 0x41:
+        setReg = cpu->setB;  
+        getReg = cpu->getC;
+        break;
+        case 0x42:
+        setReg = cpu->setB;  
+        getReg = cpu->getD;
+        break;
+        case 0x43:
+        setReg = cpu->setB;  
+        getReg = cpu->getE;
+        break;
+        case 0x44:
+        setReg = cpu->setB;  
+        getReg = cpu->getH;
+        break;
+        case 0x45:
+        setReg = cpu->setB;  
+        getReg = cpu->getL;
+        break;
+        case 0x46:
+        setReg = cpu->setB;
+        loadMem(cpu, setReg, cpu->HL_pair);
+        status = false;
+        break;
+
+        case 0x48:
+        setReg = cpu->setC;  
+        getReg = cpu->getB;
+        break;
+        case 0x49:
+        setReg = cpu->setC;  
+        getReg = cpu->getC;
+        break;
+        case 0x4A:
+        setReg = cpu->setC;  
+        getReg = cpu->getD;
+        break;
+        case 0x4B:
+        setReg = cpu->setC;  
+        getReg = cpu->getE;
+        break;
+        case 0x4C:
+        setReg = cpu->setC;  
+        getReg = cpu->getH;
+        break;
+        case 0x4D:
+        setReg = cpu->setC;  
+        getReg = cpu->getL;
+        break;
+        case 0x4E:
+        setReg = cpu->setC;
+        loadMem(cpu, setReg, cpu->HL_pair);
+        status = false;
+        break;
 
     }
-
+    if(status){
     uint8_t val = getReg(cpu);
     setReg(cpu, val);
+    }
  }
