@@ -12,8 +12,8 @@
  This function uses a function pointer to generalize loading a value from memory into a register
  @param: offset - 16-bit register offset specified by opcode
  */
- void loadFromMem(Z80_State *cpu, void (*setReg)(Z80_State *, uint8_t), uint16_t offset){
-    uint8_t val = cpu -> memory[offset];
+ void loadFromMem(Z80_State *cpu, void (*setReg)(Z80_State *, uint8_t), uint16_t addr){
+    uint8_t val = cpu -> memory[addr];
     setReg(cpu, val);
  }
  /*
@@ -52,14 +52,44 @@
         case 0xEA:
         getReg = cpu->getA;
         uint16_t addr = (cpu->memory[cpu->PC+2] << 8) | cpu->memory[cpu->PC+1];
-        loadIntoMem(cpu, getReg, cpu->memory[addr]);
+        loadIntoMem(cpu, getReg, addr);
         status = false;
         break;
+        case 0x3A:
+        setReg = cpu->setA;
+        loadFromMem(cpu, setReg, cpu->HL_pair);
+        status = false;
+        //Assumes a little endian system
+        cpu->HL_pair--;
         case 0x32:
         getReg = cpu->getA;
         loadIntoMem(cpu, getReg, cpu->HL_pair);
-        //Assumes a little endian system
+        status = false;
         cpu->HL_pair--;
+        case 0x2A:
+        setReg = cpu->setA;
+        loadFromMem(cpu, setReg, cpu->HL_pair);
+        status = false;
+        cpu->HL_pair++;
+        case 0x22:
+        getReg = cpu->getA;
+        loadIntoMem(cpu, getReg, cpu->HL_pair);
+        status = false;
+        cpu->HL_pair++;
+        case 0xE0:
+        getReg = cpu->getA;
+        uint16_t addr = cpu -> memory[cpu->PC+1] + 0xFF00;
+        loadIntoMem(cpu, getReg, addr);
+        status = false;
+        cpu -> PC += 1;
+        break;
+        case 0xF0:
+        setReg = cpu->setA;
+        uint16_t addr = cpu -> memory[cpu->PC+1] + 0xFF00;
+        loadFromMem(cpu, setReg, addr);
+        status = false;
+        cpu -> PC += 1;
+        break;
 
         case 0x7F:  
         getReg = cpu->getA;
@@ -105,16 +135,16 @@
         status = false;
         break;
         case 0xFA:
-        uint16_t addr = (cpu->memory[cpu->PC+2] << 8) | cpu->memory[cpu->PC+1];
+        uint16_t val = (cpu->memory[cpu->PC+2] << 8) | cpu->memory[cpu->PC+1];
         setReg = cpu->setA;
-        loadImm(cpu, setReg, cpu->memory[addr]);
+        loadImm(cpu, setReg, val);
         cpu -> PC += 2;
         status = false;
         break;
         case 0x3E:
-        uint16_t addr = cpu->memory[cpu->PC+1];
+        uint8_t val = cpu->memory[cpu->PC+1];
         setReg = cpu->setA;
-        loadImm(cpu, setReg, cpu->memory[addr]);
+        loadImm(cpu, setReg, val);
         cpu -> PC += 1;
         status = false;
         break;
