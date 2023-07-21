@@ -34,6 +34,28 @@
     bool status = true;
 
         switch (opcode) {
+        case 0x02:
+        getReg = cpu->getA;
+        loadIntoMem(cpu, getReg, cpu->BC_pair);
+        status = false;
+        break;
+        case 0x12:
+        getReg = cpu->getA;
+        loadIntoMem(cpu, getReg, cpu->DE_pair);
+        status = false;
+        break;
+        case 0x77:
+        getReg = cpu->getA;
+        loadIntoMem(cpu, getReg, cpu->HL_pair);
+        status = false;
+        break;
+        case 0xEA:
+        getReg = cpu->getA;
+        uint16_t addr = (cpu->memory[cpu->PC+2] << 8) | cpu->memory[cpu->PC+1];
+        loadIntoMem(cpu, getReg, cpu->memory[addr]);
+        status = false;
+        break;
+
         case 0x7F:  
         getReg = cpu->getA;
         setReg = cpu->setA;
@@ -67,6 +89,40 @@
         loadFromMem(cpu, setReg, cpu->HL_pair);
         status = false;
         break;
+        case 0x0A:
+        setReg = cpu->setA;
+        loadFromMem(cpu, setReg, cpu->BC_pair);
+        status = false;
+        break;
+        case 0x1A:
+        setReg = cpu->setA;
+        loadFromMem(cpu, setReg, cpu->DE_pair);
+        status = false;
+        break;
+        case 0xFA:
+        uint16_t addr = (cpu->memory[cpu->PC+2] << 8) | cpu->memory[cpu->PC+1];
+        setReg = cpu->setA;
+        loadImm(cpu, setReg, cpu->memory[addr]);
+        cpu -> PC += 2;
+        status = false;
+        break;
+        case 0x3E:
+        uint16_t addr = cpu->memory[cpu->PC+1];
+        setReg = cpu->setA;
+        loadImm(cpu, setReg, cpu->memory[addr]);
+        cpu -> PC += 1;
+        status = false;
+        break;
+        case 0xF2:
+        setReg = cpu->setA;
+        uint8_t val = cpu->memory[cpu->BC.C + 0xFF00];
+        loadFromMem(cpu, setReg, val);
+        break;
+        case 0xE2:
+        getReg = cpu->getA;
+        uint16_t addr = cpu->BC.C + 0xFF00;
+        loadIntoMem(cpu, setReg, addr);
+        break;
 
         case 0x40:
         setReg = cpu->setB;  
@@ -96,6 +152,10 @@
         setReg = cpu->setB;
         loadFromMem(cpu, setReg, cpu->HL_pair);
         status = false;
+        break;
+        case 0x47:
+        setReg = cpu->setB;
+        getReg = cpu->getA;
         break;
 
         case 0x48:
@@ -127,6 +187,10 @@
         loadFromMem(cpu, setReg, cpu->HL_pair);
         status = false;
         break;
+        case 0x4F:
+        setReg = cpu->setC;  
+        getReg = cpu->getA;
+        break;
 
         case 0x50:
         setReg = cpu->setD;  
@@ -156,6 +220,10 @@
         setReg = cpu->setD;
         loadFromMem(cpu, setReg, cpu->HL_pair);
         status = false;
+        break;
+        case 0x57:
+        setReg = cpu->setD;  
+        getReg = cpu->getA;
         break;
 
         case 0x58:
@@ -217,6 +285,10 @@
         loadFromMem(cpu, setReg, cpu->HL_pair);
         status = false;
         break;
+        case 0x67:
+        setReg = cpu->setH;  
+        getReg = cpu->getA;
+        break;
 
         case 0x68:
         setReg = cpu->setL;  
@@ -246,6 +318,10 @@
         setReg = cpu->setL;
         loadFromMem(cpu, setReg, cpu->HL_pair);
         status = false;
+        break;
+        case 0x6F:
+        setReg = cpu->setL;  
+        getReg = cpu->getA;
         break;
 
     }
