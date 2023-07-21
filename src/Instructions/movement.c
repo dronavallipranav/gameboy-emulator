@@ -24,7 +24,7 @@
     cpu -> memory[offset] = getReg;
  }
   /*
- This function handles all 8-bit loads
+ This function handles all 8-bit loads assuming we are using a little endian system
  @param: opcode - code to specify which load instruction
  */
  void loadReg(Z80_State *cpu, uint8_t opcode){
@@ -55,6 +55,11 @@
         loadIntoMem(cpu, getReg, cpu->memory[addr]);
         status = false;
         break;
+        case 0x32:
+        getReg = cpu->getA;
+        loadIntoMem(cpu, getReg, cpu->HL_pair);
+        //Assumes a little endian system
+        cpu->HL_pair--;
 
         case 0x7F:  
         getReg = cpu->getA;
