@@ -15,7 +15,7 @@ void test_loadReg() {
     CU_ASSERT_EQUAL(cpu.getB(&cpu), 0xB0); 
 
     
-    //Test LOAD C, (HL) (opcode 0x4E)
+    //Test LOAD C, (HL) (loadFromMem) (opcode 0x4E)
     cpu.setHL(&cpu, 20);
     cpu.memory[cpu.HL_pair] = 15;
     loadReg(&cpu, 0x4E);
@@ -23,6 +23,16 @@ void test_loadReg() {
     printf("%hhu\n", cpu.memory[cpu.HL_pair]);
     printf("%hhu\n", cpu.getC(&cpu));
     CU_ASSERT_EQUAL(cpu.getC(&cpu), 15);
+
+    //Test Load (HL), C (loadIntoMem) (opcode 0x77)
+    cpu.setHL(&cpu, 10);
+    cpu.memory[cpu.HL_pair] = 5;
+    cpu.AF.A = 7;
+    CU_ASSERT_EQUAL(cpu.memory[10], 5);
+    loadReg(&cpu, 0x77);
+    CU_ASSERT_EQUAL(cpu.memory[10], 7);
+
+
     
 }
 

@@ -21,14 +21,15 @@
  @param: offset - 16-bit register offset specified by opcode
  */
  void loadIntoMem(Z80_State *cpu, uint8_t(*getReg)(Z80_State *), uint16_t offset){
-    cpu -> memory[offset] = getReg;
+    cpu -> memory[offset] = getReg(cpu);
  }
   /*
  This function handles all 8-bit loads assuming we are using a little endian system
  @param: opcode - code to specify which load instruction
  */
  void loadReg(Z80_State *cpu, uint8_t opcode){
-
+    uint16_t addr;
+    uint8_t val;
     uint8_t (*getReg)(Z80_State *);
     void (*setReg)(Z80_State *, uint8_t);
     bool status = true;
@@ -61,31 +62,35 @@
         status = false;
         //Assumes a little endian system
         cpu->HL_pair--;
+        break;
         case 0x32:
         getReg = cpu->getA;
         loadIntoMem(cpu, getReg, cpu->HL_pair);
         status = false;
         cpu->HL_pair--;
+        break;
         case 0x2A:
         setReg = cpu->setA;
         loadFromMem(cpu, setReg, cpu->HL_pair);
         status = false;
         cpu->HL_pair++;
+        break;
         case 0x22:
         getReg = cpu->getA;
         loadIntoMem(cpu, getReg, cpu->HL_pair);
         status = false;
         cpu->HL_pair++;
+        break;
         case 0xE0:
         getReg = cpu->getA;
-        uint16_t addr = cpu -> memory[cpu->PC+1] + 0xFF00;
+        addr = cpu -> memory[cpu->PC+1] + 0xFF00;
         loadIntoMem(cpu, getReg, addr);
         status = false;
         cpu -> PC += 1;
         break;
         case 0xF0:
         setReg = cpu->setA;
-        uint16_t addr = cpu -> memory[cpu->PC+1] + 0xFF00;
+        addr = cpu -> memory[cpu->PC+1] + 0xFF00;
         loadFromMem(cpu, setReg, addr);
         status = false;
         cpu -> PC += 1;
@@ -135,14 +140,14 @@
         status = false;
         break;
         case 0xFA:
-        uint16_t val = (cpu->memory[cpu->PC+2] << 8) | cpu->memory[cpu->PC+1];
+        val = (cpu->memory[cpu->PC+2] << 8) | cpu->memory[cpu->PC+1];
         setReg = cpu->setA;
         loadImm(cpu, setReg, val);
         cpu -> PC += 2;
         status = false;
         break;
         case 0x3E:
-        uint8_t val = cpu->memory[cpu->PC+1];
+         val = cpu->memory[cpu->PC+1];
         setReg = cpu->setA;
         loadImm(cpu, setReg, val);
         cpu -> PC += 1;
@@ -150,13 +155,13 @@
         break;
         case 0xF2:
         setReg = cpu->setA;
-        uint8_t val = cpu->memory[cpu->BC.C + 0xFF00];
+        val = cpu->memory[cpu->BC.C + 0xFF00];
         loadFromMem(cpu, setReg, val);
         break;
         case 0xE2:
         getReg = cpu->getA;
-        uint16_t addr = cpu->BC.C + 0xFF00;
-        loadIntoMem(cpu, setReg, addr);
+        addr = cpu->BC.C + 0xFF00;
+        loadIntoMem(cpu, getReg, addr);
         break;
 
         case 0x40:
