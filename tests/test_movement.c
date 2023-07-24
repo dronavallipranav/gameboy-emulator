@@ -19,9 +19,6 @@ void test_loadReg() {
     cpu.setHL(&cpu, 20);
     cpu.memory[cpu.HL_pair] = 15;
     loadReg(&cpu, 0x4E);
-    printf("%hu\n", cpu.HL_pair);
-    printf("%hhu\n", cpu.memory[cpu.HL_pair]);
-    printf("%hhu\n", cpu.getC(&cpu));
     CU_ASSERT_EQUAL(cpu.getC(&cpu), 15);
 
     //Test Load (HL), C (loadIntoMem) (opcode 0x77)
@@ -31,6 +28,22 @@ void test_loadReg() {
     CU_ASSERT_EQUAL(cpu.memory[10], 5);
     loadReg(&cpu, 0x77);
     CU_ASSERT_EQUAL(cpu.memory[10], 7);
+
+    //Test PUSH (0xF5)
+    cpu.SP = 0xFF00;
+    cpu.AF_pair = 0x3210;
+    loadReg(&cpu, 0xF5);
+    uint16_t value = (cpu.memory[cpu.SP + 1] << 8) | cpu.memory[cpu.SP];
+    CU_ASSERT_EQUAL(value, 0x3210);
+    CU_ASSERT_EQUAL(cpu.SP, 0xFEFE);
+
+    //Test POP (0xC1)
+    cpu.SP = 0xFEFE;
+    cpu.memory[cpu.SP+1] = 0x44;
+    cpu.memory[cpu.SP] = 0x78;
+    cpu.BC_pair = 0x3333;
+    loadReg(&cpu, 0xC1);
+    CU_ASSERT_EQUAL(cpu.BC_pair, 0x4478);
 
     //Test LDHL SP,n (opcode 0xF8)
     cpu.SP = 0xFF00;
@@ -44,7 +57,6 @@ void test_loadReg() {
     CU_ASSERT_EQUAL(cpu.AF.flags.Z, 1);
     CU_ASSERT_EQUAL(cpu.AF.flags.N, 1);
     loadReg(&cpu, 0xF8);
-    printf("%hu\n", cpu.HL_pair);
     CU_ASSERT_EQUAL(cpu.HL_pair, 0xFF02);
     CU_ASSERT_EQUAL(cpu.AF.flags.C, 0);
     CU_ASSERT_EQUAL(cpu.AF.flags.H, 0);
@@ -55,7 +67,6 @@ void test_loadReg() {
     cpu.SP = 0xFFFF;
     cpu.memory[1] = 0xFF;
     loadReg(&cpu, 0xF8);
-    printf("bruh\n");
     CU_ASSERT_EQUAL(cpu.AF.flags.C, 1);
     CU_ASSERT_EQUAL(cpu.AF.flags.H, 1);
     CU_ASSERT_EQUAL(cpu.AF.flags.Z, 0);
