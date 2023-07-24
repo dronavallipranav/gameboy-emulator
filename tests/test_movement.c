@@ -32,7 +32,34 @@ void test_loadReg() {
     loadReg(&cpu, 0x77);
     CU_ASSERT_EQUAL(cpu.memory[10], 7);
 
-
+    //Test LDHL SP,n (opcode 0xF8)
+    cpu.SP = 0xFF00;
+    cpu.memory[1] = 0x2;
+    cpu.AF.flags.C = 1;
+    cpu.AF.flags.H = 1;
+    cpu.AF.flags.Z = 1;
+    cpu.AF.flags.N = 1;
+    CU_ASSERT_EQUAL(cpu.AF.flags.C, 1);
+    CU_ASSERT_EQUAL(cpu.AF.flags.H, 1);
+    CU_ASSERT_EQUAL(cpu.AF.flags.Z, 1);
+    CU_ASSERT_EQUAL(cpu.AF.flags.N, 1);
+    loadReg(&cpu, 0xF8);
+    printf("%hu\n", cpu.HL_pair);
+    CU_ASSERT_EQUAL(cpu.HL_pair, 0xFF02);
+    CU_ASSERT_EQUAL(cpu.AF.flags.C, 0);
+    CU_ASSERT_EQUAL(cpu.AF.flags.H, 0);
+    CU_ASSERT_EQUAL(cpu.AF.flags.Z, 0);
+    CU_ASSERT_EQUAL(cpu.AF.flags.N, 0);
+    CU_ASSERT_EQUAL(cpu.PC, 1);
+    cpu.PC = 0;
+    cpu.SP = 0xFFFF;
+    cpu.memory[1] = 0xFF;
+    loadReg(&cpu, 0xF8);
+    printf("bruh\n");
+    CU_ASSERT_EQUAL(cpu.AF.flags.C, 1);
+    CU_ASSERT_EQUAL(cpu.AF.flags.H, 1);
+    CU_ASSERT_EQUAL(cpu.AF.flags.Z, 0);
+    CU_ASSERT_EQUAL(cpu.AF.flags.N, 0); 
     
 }
 

@@ -114,7 +114,7 @@ void initCPU(Z80_State *cpu){
     cpu->R = 0;
     cpu->IX = 0;
     cpu->IY = 0;
-    cpu->SP = 0;
+    cpu->SP = 0xFFFE;
     cpu->PC = 0;
     cpu -> MBC = 1;
     cpu->interrupt = 0;

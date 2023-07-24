@@ -9,6 +9,13 @@
     setReg(cpu,imm);
  }
   /*
+ This function loads an immediate 16 bit value into specified register using function pointer
+ @param: imm - 16-bit immediate value
+ */
+ void loadImm16(Z80_State *cpu, void (*setReg)(Z80_State *, uint16_t), uint16_t imm){
+    setReg(cpu,imm);
+ }
+  /*
  This function uses a function pointer to generalize loading a value from memory into a register
  @param: offset - 16-bit register offset specified by opcode
  */
@@ -23,6 +30,13 @@
  void loadIntoMem(Z80_State *cpu, uint8_t(*getReg)(Z80_State *), uint16_t offset){
     cpu -> memory[offset] = getReg(cpu);
  }
+ /*
+ This function uses a function pointer to generalize loading a register into memory
+ @param: offset - 16-bit register offset specified by opcode
+ */
+ void loadIntoMem16(Z80_State *cpu, uint16_t(*getReg)(Z80_State *), uint16_t offset){
+    cpu -> memory[offset] = getReg(cpu);
+ }
   /*
  This function handles all 8-bit loads assuming we are using a little endian system
  @param: opcode - code to specify which load instruction
@@ -31,12 +45,126 @@
     uint16_t addr;
     uint8_t val;
     uint8_t (*getReg)(Z80_State *);
+    uint16_t (*getReg16)(Z80_State *);
     void (*setReg)(Z80_State *, uint8_t);
+    void (*setReg16)(Z80_State *, uint16_t);
     bool status = true;
 
         switch (opcode) {
+        //16 bit loads
+        case 0x01:
+        addr = (cpu->memory[cpu->PC+2] << 8) | cpu->memory[cpu->PC+1];
+        setReg16 = cpu->setBC;
+        loadImm16(cpu,setReg16, addr);
+        status = false;
+        break;
+        case 0x11:
+        addr = (cpu->memory[cpu->PC+2] << 8) | cpu->memory[cpu->PC+1];
+        setReg16 = cpu->setDE;
+        loadImm16(cpu,setReg16, addr);
+        status = false;
+        cpu -> PC += 2;
+        break;
+        case 0x21:
+        addr = (cpu->memory[cpu->PC+2] << 8) | cpu->memory[cpu->PC+1];
+        setReg16 = cpu->setHL;
+        loadImm16(cpu,setReg16, addr);
+        status = false;
+        cpu -> PC += 2;
+        break;
+        case 0x31:
+        addr = (cpu->memory[cpu->PC+2] << 8) | cpu->memory[cpu->PC+1];
+        setReg16 = cpu->setSP;
+        loadImm16(cpu,setReg16, addr);
+        status = false;
+        cpu -> PC += 2;
+        break;
+        case 0xF9:
+        getReg16 = cpu->getHL;
+        setReg16 = cpu->setSP;
+        break;
+        case 0xF8:{
+        uint8_t sp_low = cpu->SP & 0xFF;
+        int8_t n = cpu->memory[cpu->PC+1];
+        uint16_t res = cpu->SP + n;
+        setReg16 = cpu -> setHL;
+        loadImm16(cpu, setReg16, res);
+        printf("%hhu\n", sp_low);
+        printf("%hhu\n", n);
+        cpu -> AF.flags.C = (sp_low + n) > 0xFF ? 1 : 0;
+        printf("%hu\n", res);
+        cpu -> AF.flags.H = ((sp_low & 0xF) + (n & 0xF)) > 0xF ? 1 : 0;
+        cpu -> AF.flags.Z = 0;
+        cpu -> AF.flags.N = 0;
+        cpu -> PC += 1;
+        printf("%hhu\n", cpu -> AF.flags.C);
+        status = false;
+        break;
+        case 0x08:
+        addr = (cpu->memory[cpu->PC+2] << 8) | cpu->memory[cpu->PC+1];
+        getReg16 = cpu -> getSP;
+        loadIntoMem16(cpu, getReg16, addr);
+        status = false;
+        cpu -> PC += 2;
+        break;
+        }
+
+        //STACK ops
+        case 0xF5:
+        getReg16 = cpu -> getAF;
+        cpu -> SP -= 2;
+        cpu -> memory[cpu->SP] = (uint8_t)(cpu -> AF_pair & 0x00FF);
+        cpu -> memory[cpu->SP+1] = (uint8_t)((cpu -> AF_pair & 0xFF00) >> 8);
+        status = false;
+        break;
+        case 0xC5:
+        getReg16 = cpu -> getBC;
+        cpu -> SP -= 2;
+        cpu -> memory[cpu->SP] = (uint8_t)(cpu -> AF_pair & 0x00FF);
+        cpu -> memory[cpu->SP+1] = (uint8_t)((cpu -> AF_pair & 0xFF00) >> 8);
+        status = false;
+        break;
+        case 0xD5:
+        getReg16 = cpu -> getDE;
+        cpu -> SP -= 2;
+        cpu -> memory[cpu->SP] = (uint8_t)(cpu -> AF_pair & 0x00FF);
+        cpu -> memory[cpu->SP+1] = (uint8_t)((cpu -> AF_pair & 0xFF00) >> 8);
+        status = false;
+        break;
+        case 0xE5:
+        getReg16 = cpu -> getHL;
+        cpu -> SP -= 2;
+        cpu -> memory[cpu->SP] = (uint8_t)(cpu -> AF_pair & 0x00FF);
+        cpu -> memory[cpu->SP+1] = (uint8_t)((cpu -> AF_pair & 0xFF00) >> 8);
+        status = false;
+        break;
+        case 0xF1:
+        addr = ((cpu->memory[cpu->SP+1]) << 8) | cpu->memory[cpu->SP];
+        setReg16 = cpu -> setAF;
+        loadImm16(cpu, setReg16, addr);
+        status = false;
+        break;
+        case 0xC1:
+        addr = ((cpu->memory[cpu->SP+1]) << 8) | cpu->memory[cpu->SP];
+        setReg16 = cpu -> setBC;
+        loadImm16(cpu, setReg16, addr);
+        status = false;
+        break;
+        case 0xD1:
+        addr = ((cpu->memory[cpu->SP+1]) << 8) | cpu->memory[cpu->SP];
+        setReg16 = cpu -> setDE;
+        loadImm16(cpu, setReg16, addr);
+        status = false;
+        break;
+        case 0xE1:
+        addr = ((cpu->memory[cpu->SP+1]) << 8) | cpu->memory[cpu->SP];
+        setReg16 = cpu -> setHL;
+        loadImm16(cpu, setReg16, addr);
+        status = false;
+        break;
+
         case 0x02:
-        getReg = cpu->getA;
+        getReg = cpu->getA; 
         loadIntoMem(cpu, getReg, cpu->BC_pair);
         status = false;
         break;
@@ -52,7 +180,7 @@
         break;
         case 0xEA:
         getReg = cpu->getA;
-        uint16_t addr = (cpu->memory[cpu->PC+2] << 8) | cpu->memory[cpu->PC+1];
+        addr = (uint16_t) (cpu->memory[cpu->PC+2] << 8) | (uint16_t) cpu->memory[cpu->PC+1];
         loadIntoMem(cpu, getReg, addr);
         status = false;
         break;
