@@ -89,15 +89,11 @@
         uint16_t res = cpu->SP + n;
         setReg16 = cpu -> setHL;
         loadImm16(cpu, setReg16, res);
-        printf("%hhu\n", sp_low);
-        printf("%hhu\n", n);
-        cpu -> AF.flags.C = (sp_low + n) > 0xFF ? 1 : 0;
-        printf("%hu\n", res);
+        cpu -> AF.flags.C = ((uint16_t)sp_low + (uint16_t)n) > 0xFF ? 1 : 0;
         cpu -> AF.flags.H = ((sp_low & 0xF) + (n & 0xF)) > 0xF ? 1 : 0;
         cpu -> AF.flags.Z = 0;
         cpu -> AF.flags.N = 0;
         cpu -> PC += 1;
-        printf("%hhu\n", cpu -> AF.flags.C);
         status = false;
         break;
         case 0x08:
