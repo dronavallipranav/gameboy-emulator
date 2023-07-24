@@ -7,7 +7,7 @@ void add16(Z80_State *cpu, uint16_t reg);
 
 void addImm(Z80_State *cpu, uint16_t imm);
 
-void sub8(Z80_State *cpu, uint8_t reg);
+void sub8(Z80_State *cpu, uint8_t reg, bool carryStatus);
 
 void sub16(Z80_State *cpu ,uint16_t reg);
 
