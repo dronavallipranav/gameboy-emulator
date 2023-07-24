@@ -3,7 +3,7 @@ Creating a GameBoy Emulator (similar to Z80) from scratch in C with the ultimate
 
 ## Dependencies
 
-To build and run the emulator, you will need the following dependencies:
+To build and run the test suite, you will need the following dependencies:
 
 - CMake (version 3.0 or higher)
 - CUnit (version 2.1-3)
