@@ -8,7 +8,7 @@ void test_add8() {
     initCPU(&cpu);
     cpu.AF.A = 10;
     cpu.BC.B = 5;
-    add8(&cpu, cpu.BC.B);
+    add8(&cpu, cpu.BC.B, false);
     CU_ASSERT_EQUAL(cpu.AF.A, 15);
     
 }
