@@ -96,6 +96,14 @@ void setHL(Z80_State *cpu, uint16_t val) {
   cpu->HL_pair = val;
 }
 
+uint16_t getSP(Z80_State *cpu) {
+  return cpu->SP;
+}
+
+void setSP(Z80_State *cpu, uint16_t val) {
+  cpu->SP = val;
+}
+
 void initCPU(Z80_State *cpu){
   
     //init memory space to 0
@@ -148,6 +156,14 @@ cpu->setL = setL;
 
 cpu->getHL = getHL;
 cpu->setHL = setHL;
+cpu->getAF = getAF;
+cpu->setAF = setAF;
+cpu->getBC = getBC;
+cpu->setBC = setBC;
+cpu->getDE = getDE;
+cpu->setDE = setDE;
+cpu->getSP = getSP;
+cpu->setSP = setSP;
 
  
 }
