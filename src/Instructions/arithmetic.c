@@ -44,6 +44,60 @@ void subImm(Z80_State *cpu, uint16_t imm)
     cpu->AF.A -= imm;
 }
 
+void and8(Z80_State *cpu, uint8_t reg)
+{
+    uint8_t res = cpu->AF.A & reg;
+    cpu->AF.flags.Z == (res & 0xFF) == 0;
+    cpu->AF.flags.N = 0;
+    cpu->AF.flags.H = 1;
+    cpu->AF.flags.C = 0;
+    cpu->AF.A = res;
+}
+
+void or8(Z80_State *cpu, uint8_t reg)
+{
+    uint8_t res = cpu->AF.A | reg;
+    cpu->AF.flags.Z == (res & 0xFF) == 0;
+    cpu->AF.flags.N = 0;
+    cpu->AF.flags.H = 0;
+    cpu->AF.flags.C = 0;
+    cpu->AF.A = res;
+}
+
+void xor8(Z80_State *cpu, uint8_t reg)
+{
+    uint8_t res = cpu->AF.A ^ reg;
+    cpu->AF.flags.Z == (res & 0xFF) == 0;
+    cpu->AF.flags.N = 0;
+    cpu->AF.flags.H = 0;
+    cpu->AF.flags.C = 0;
+    cpu->AF.A = res;
+}
+
+void cp8(Z80_State *cpu, uint8_t reg)
+{
+    cpu->AF.flags.Z == reg > cpu->AF.A;
+    cpu->AF.flags.N = 1;
+    cpu->AF.flags.H = (cpu->AF.A & 0x0F) < (reg & 0x0F);
+    cpu->AF.flags.C = cpu->AF.A > cpu < reg;
+}
+
+void inc8(Z80_State *cpu, void (*setReg)(Z80_State *, uint8_t), uint8_t val)
+{
+    cpu->AF.flags.Z == val + 1 == 0;
+    cpu->AF.flags.N = 0;
+    cpu->AF.flags.H = val + 1 > 0x0F;
+    setReg(cpu, val + 1);
+}
+
+void dec8(Z80_State *cpu, void (*setReg)(Z80_State *, uint8_t), uint8_t val)
+{
+    cpu->AF.flags.Z == val - 1 == 0;
+    cpu->AF.flags.N = 1;
+    cpu->AF.flags.H = (val & 0x0F) == 0;
+    setReg(cpu, val - 1);
+}
+
 void ALU(Z80_State *cpu, uint8_t opcode)
 {
     uint8_t val;
@@ -52,6 +106,7 @@ void ALU(Z80_State *cpu, uint8_t opcode)
 
     switch (opcode)
     {
+    //ADD ops
     case 0x87:
         val = cpu->AF.A;
         add8(cpu, val, false);
@@ -90,7 +145,7 @@ void ALU(Z80_State *cpu, uint8_t opcode)
         cpu->PC += 1;
         break;
 
-    // ADC operations
+    // ADC ops
     case 0x8F:
         val = cpu->AF.A;
         add8(cpu, val, true);
@@ -129,7 +184,7 @@ void ALU(Z80_State *cpu, uint8_t opcode)
         cpu->PC += 1;
         break;
 
-        // SUB
+    //SUB ops
     case 0x97:
         sub8(cpu, cpu->AF.A, false);
         break;
@@ -187,6 +242,221 @@ void ALU(Z80_State *cpu, uint8_t opcode)
         addr = cpu->HL_pair;
         sub8(cpu, cpu->memory[addr], true);
         break;
-    
+
+    // Logical Group AND
+    case 0xA7:
+        val = cpu->AF.A;
+        and8(cpu, val);
+        break;
+    case 0xA0:
+        val = cpu->BC.B;
+        and8(cpu, val);
+        break;
+    case 0xA1:
+        val = cpu->BC.C;
+        and8(cpu, val);
+        break;
+    case 0xA2:
+        val = cpu->DE.D;
+        and8(cpu, val);
+        break;
+    case 0xA3:
+        val = cpu->DE.E;
+        and8(cpu, val);
+        break;
+    case 0xA4:
+        val = cpu->HL.H;
+        and8(cpu, val);
+        break;
+    case 0xA5:
+        val = cpu->HL.L;
+        and8(cpu, val);
+        break;
+    case 0xA6:
+        val = cpu->memory[cpu->HL_pair];
+        and8(cpu, val);
+        break;
+    case 0xE6:
+        val = cpu->memory[cpu->PC + 1];
+        cpu->PC += 1;
+        and8(cpu, val);
+        break;
+
+    // OR ops
+    case 0xB7:
+        val = cpu->AF.A;
+        or8(cpu, val);
+        break;
+    case 0xB0:
+        val = cpu->BC.B;
+        or8(cpu, val);
+        break;
+    case 0xB1:
+        val = cpu->BC.C;
+        or8(cpu, val);
+        break;
+    case 0xB2:
+        val = cpu->DE.D;
+        or8(cpu, val);
+        break;
+    case 0xB3:
+        val = cpu->DE.E;
+        or8(cpu, val);
+        break;
+    case 0xB4:
+        val = cpu->HL.H;
+        or8(cpu, val);
+        break;
+    case 0xB5:
+        val = cpu->HL.L;
+        or8(cpu, val);
+        break;
+    case 0xB6:
+        val = cpu->memory[cpu->HL_pair];
+        or8(cpu, val);
+        break;
+    case 0xF6:
+        val = cpu->memory[cpu->PC + 1];
+        cpu->PC += 1;
+        or8(cpu, val);
+        break;
+
+    // XOR ops
+    case 0xAF:
+        val = cpu->AF.A;
+        xor8(cpu, val);
+        break;
+    case 0xA8:
+        val = cpu->BC.B;
+        xor8(cpu, val);
+        break;
+    case 0xA9:
+        val = cpu->BC.C;
+        xor8(cpu, val);
+        break;
+    case 0xAA:
+        val = cpu->DE.D;
+        xor8(cpu, val);
+        break;
+    case 0xAB:
+        val = cpu->DE.E;
+        xor8(cpu, val);
+        break;
+    case 0xAC:
+        val = cpu->HL.H;
+        xor8(cpu, val);
+        break;
+    case 0xAD:
+        val = cpu->HL.L;
+        xor8(cpu, val);
+        break;
+    case 0xAE:
+        val = cpu->memory[cpu->HL_pair];
+        xor8(cpu, val);
+        break;
+    case 0xEE:
+        val = cpu->memory[cpu->PC + 1];
+        cpu->PC += 1;
+        xor8(cpu, val);
+        break;
+
+    // CP ops
+    case 0xBF:
+        val = cpu->AF.A;
+        cp8(cpu, val);
+        break;
+    case 0xB8:
+        val = cpu->BC.B;
+        cp8(cpu, val);
+        break;
+    case 0xB9:
+        val = cpu->BC.C;
+        cp8(cpu, val);
+        break;
+    case 0xBA:
+        val = cpu->DE.D;
+        cp8(cpu, val);
+        break;
+    case 0xBB:
+        val = cpu->DE.E;
+        cp8(cpu, val);
+        break;
+    case 0xBC:
+        val = cpu->HL.H;
+        cp8(cpu, val);
+        break;
+    case 0xBD:
+        val = cpu->HL.L;
+        cp8(cpu, val);
+        break;
+    case 0xBE:
+        val = cpu->memory[cpu->HL_pair];
+        cp8(cpu, val);
+        break;
+    case 0xFE:
+        val = cpu->memory[cpu->PC + 1];
+        cpu->PC += 1;
+        cp8(cpu, val);
+        break;
+
+    // INC ops
+    case 0x3C:
+        inc8(cpu, cpu->setA, cpu->AF.A);
+        break;
+    case 0x04:
+        inc8(cpu, cpu->setB, cpu->BC.B);
+        break;
+    case 0x0C:
+        inc8(cpu, cpu->setC, cpu->BC.C);
+        break;
+    case 0x14:
+        inc8(cpu, cpu->setD, cpu->DE.D);
+        break;
+    case 0x1C:
+        inc8(cpu, cpu->setE, cpu->DE.E);
+        break;
+    case 0x24:
+        inc8(cpu, cpu->setH, cpu->HL.H);
+        break;
+    case 0x2C:
+        inc8(cpu, cpu->setL, cpu->HL.L);
+        break;
+    case 0x34:
+        uint8_t val = cpu->memory[cpu->HL_pair];
+        cpu->AF.flags.Z == val + 1 == 0;
+        cpu->AF.flags.N = 0;
+        cpu->AF.flags.H = val + 1 > 0x0F;
+        cpu->memory[cpu->HL_pair] = val + 1;
+        break;
+
+    // DEC ops
+    case 0x3D:
+        dec8(cpu, cpu->setA, cpu->AF.A);
+        break;
+    case 0x05:
+        dec8(cpu, cpu->setB, cpu->BC.B);
+        break;
+    case 0x0D:
+        dec8(cpu, cpu->setC, cpu->BC.C);
+        break;
+    case 0x15:
+        dec8(cpu, cpu->setD, cpu->DE.D);
+        break;
+    case 0x1D:
+        dec8(cpu, cpu->setE, cpu->DE.E);
+        break;
+    case 0x25:
+        dec8(cpu, cpu->setH, cpu->HL.H);
+        break;
+    case 0x2D:
+        dec8(cpu, cpu->setL, cpu->HL.L);
+        break;
+    case 0x35:
+        uint8_t val = cpu->memory[cpu->HL_pair];
+        cpu->AF.flags.Z = (val - 1) == 0;
+        cpu->AF.flags.N = 1;
+        cpu->AF.flags.H = (val & 0x0F) == 0;
+        cpu->memory[cpu->HL_pair] = val - 1;
+        break;
     }
 }
