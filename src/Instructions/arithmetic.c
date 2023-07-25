@@ -27,10 +27,10 @@ void sub8(Z80_State *cpu, uint8_t reg, bool carryStatus)
 {
     uint16_t result = cpu->AF.A - reg - (carryStatus ? cpu->AF.flags.C : 0);
 
-    cpu->AF.flags.Z == (result & 0xFF) == 0;
+    cpu->AF.flags.Z = (result & 0xFF) == 0;
     cpu->AF.flags.N = 1;
     cpu->AF.flags.H = (cpu->AF.A & 0x0F) < (reg & 0x0F);
-    cpu->AF.flags.C = cpu->AF.A > cpu < (reg + (carryStatus ? cpu->AF.flags.C : 0));
+    cpu->AF.flags.C = cpu->AF.A < (reg + (carryStatus ? cpu->AF.flags.C : 0));
     cpu->AF.A = result & 0xFF;
 }
 
@@ -47,7 +47,7 @@ void subImm(Z80_State *cpu, uint16_t imm)
 void and8(Z80_State *cpu, uint8_t reg)
 {
     uint8_t res = cpu->AF.A & reg;
-    cpu->AF.flags.Z == (res & 0xFF) == 0;
+    cpu->AF.flags.Z = (res & 0xFF) == 0;
     cpu->AF.flags.N = 0;
     cpu->AF.flags.H = 1;
     cpu->AF.flags.C = 0;
@@ -57,7 +57,7 @@ void and8(Z80_State *cpu, uint8_t reg)
 void or8(Z80_State *cpu, uint8_t reg)
 {
     uint8_t res = cpu->AF.A | reg;
-    cpu->AF.flags.Z == (res & 0xFF) == 0;
+    cpu->AF.flags.Z = (res & 0xFF) == 0;
     cpu->AF.flags.N = 0;
     cpu->AF.flags.H = 0;
     cpu->AF.flags.C = 0;
@@ -67,7 +67,7 @@ void or8(Z80_State *cpu, uint8_t reg)
 void xor8(Z80_State *cpu, uint8_t reg)
 {
     uint8_t res = cpu->AF.A ^ reg;
-    cpu->AF.flags.Z == (res & 0xFF) == 0;
+    cpu->AF.flags.Z = (res & 0xFF) == 0;
     cpu->AF.flags.N = 0;
     cpu->AF.flags.H = 0;
     cpu->AF.flags.C = 0;
@@ -76,15 +76,15 @@ void xor8(Z80_State *cpu, uint8_t reg)
 
 void cp8(Z80_State *cpu, uint8_t reg)
 {
-    cpu->AF.flags.Z == reg > cpu->AF.A;
+    cpu->AF.flags.Z = reg > cpu->AF.A;
     cpu->AF.flags.N = 1;
     cpu->AF.flags.H = (cpu->AF.A & 0x0F) < (reg & 0x0F);
-    cpu->AF.flags.C = cpu->AF.A > cpu < reg;
+    cpu->AF.flags.C = cpu->AF.A < reg;
 }
 
 void inc8(Z80_State *cpu, void (*setReg)(Z80_State *, uint8_t), uint8_t val)
 {
-    cpu->AF.flags.Z == val + 1 == 0;
+    cpu->AF.flags.Z = val + 1 == 0;
     cpu->AF.flags.N = 0;
     cpu->AF.flags.H = val + 1 > 0x0F;
     setReg(cpu, val + 1);
@@ -92,7 +92,7 @@ void inc8(Z80_State *cpu, void (*setReg)(Z80_State *, uint8_t), uint8_t val)
 
 void dec8(Z80_State *cpu, void (*setReg)(Z80_State *, uint8_t), uint8_t val)
 {
-    cpu->AF.flags.Z == val - 1 == 0;
+    cpu->AF.flags.Z = val - 1 == 0;
     cpu->AF.flags.N = 1;
     cpu->AF.flags.H = (val & 0x0F) == 0;
     setReg(cpu, val - 1);
@@ -102,7 +102,6 @@ void ALU(Z80_State *cpu, uint8_t opcode)
 {
     uint8_t val;
     uint16_t addr;
-    uint8_t (*getReg)(Z80_State *);
 
     switch (opcode)
     {
@@ -422,8 +421,8 @@ void ALU(Z80_State *cpu, uint8_t opcode)
         inc8(cpu, cpu->setL, cpu->HL.L);
         break;
     case 0x34:
-        uint8_t val = cpu->memory[cpu->HL_pair];
-        cpu->AF.flags.Z == val + 1 == 0;
+        val = cpu->memory[cpu->HL_pair];
+        cpu->AF.flags.Z = val + 1 == 0;
         cpu->AF.flags.N = 0;
         cpu->AF.flags.H = val + 1 > 0x0F;
         cpu->memory[cpu->HL_pair] = val + 1;
@@ -452,7 +451,7 @@ void ALU(Z80_State *cpu, uint8_t opcode)
         dec8(cpu, cpu->setL, cpu->HL.L);
         break;
     case 0x35:
-        uint8_t val = cpu->memory[cpu->HL_pair];
+        val = cpu->memory[cpu->HL_pair];
         cpu->AF.flags.Z = (val - 1) == 0;
         cpu->AF.flags.N = 1;
         cpu->AF.flags.H = (val & 0x0F) == 0;
