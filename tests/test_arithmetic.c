@@ -91,6 +91,11 @@ void test_or8() {
     cpu.BC.B = 0x0F;
     or8(&cpu, cpu.BC.B);
     CU_ASSERT_EQUAL(cpu.AF.A, 0xFF);
+    CU_ASSERT_EQUAL(cpu.AF.A, 0xFF);
+    CU_ASSERT_TRUE(cpu.AF.flags.Z == ((cpu.AF.A == 0) ? 1 : 0));
+    CU_ASSERT_TRUE(cpu.AF.flags.N == 0);
+    CU_ASSERT_TRUE(cpu.AF.flags.H == 0);
+    CU_ASSERT_TRUE(cpu.AF.flags.C == 0);
     
 }
 
