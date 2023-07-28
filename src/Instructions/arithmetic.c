@@ -13,10 +13,10 @@ void add8(Z80_State *cpu, uint8_t reg, bool carryStatus)
     cpu->AF.A = result & 0xFF;
 }
 
-void add16(Z80_State *cpu,  void(*setReg)(Z80_State*, uint16_t), uint16_t(*getReg)(Z80_State*) ,uint16_t reg)
+void add16(Z80_State *cpu, void (*setReg)(Z80_State *, uint16_t), uint16_t (*getReg)(Z80_State *), uint16_t reg)
 {
-    uint32_t val = (uint32_t) getReg(cpu);
-    val += (uint32_t) reg;
+    uint32_t val = (uint32_t)getReg(cpu);
+    val += (uint32_t)reg;
 
     cpu->AF.flags.N = 0;
     cpu->AF.flags.H = ((getReg(cpu) & 0x0FFF) + (reg & 0x0FFF)) > 0x0FFF;
@@ -109,12 +109,12 @@ void ALU(Z80_State *cpu, uint8_t opcode)
 {
     uint8_t val;
     uint16_t addr;
-    void(*setReg16)(Z80_State *, uint16_t);
-    uint16_t (*getReg16)(Z80_State*);
+    void (*setReg16)(Z80_State *, uint16_t);
+    uint16_t (*getReg16)(Z80_State *);
 
     switch (opcode)
     {
-    //ADD ops
+    // ADD ops
     case 0x87:
         val = cpu->AF.A;
         add8(cpu, val, false);
@@ -192,7 +192,7 @@ void ALU(Z80_State *cpu, uint8_t opcode)
         cpu->PC += 1;
         break;
 
-    //SUB ops
+    // SUB ops
     case 0x97:
         sub8(cpu, cpu->AF.A, false);
         break;
@@ -467,94 +467,92 @@ void ALU(Z80_State *cpu, uint8_t opcode)
         cpu->memory[cpu->HL_pair] = val - 1;
         break;
 
-    //16-bit arithmetic
+    // 16-bit arithmetic
     case 0x09:
-        setReg16 = cpu -> setHL;
-        getReg16 = cpu -> getHL;
+        setReg16 = cpu->setHL;
+        getReg16 = cpu->getHL;
         addr = cpu->BC_pair;
         add16(cpu, setReg16, getReg16, addr);
-    
-    case 0x19:  
+
+    case 0x19:
         setReg16 = cpu->setHL;
-        getReg16 = cpu -> getHL;
+        getReg16 = cpu->getHL;
         addr = cpu->DE_pair;
         add16(cpu, setReg16, getReg16, addr);
         break;
 
-    case 0x29: 
+    case 0x29:
         setReg16 = cpu->setHL;
-        getReg16 = cpu -> getHL;
+        getReg16 = cpu->getHL;
         addr = cpu->HL_pair;
         add16(cpu, setReg16, getReg16, addr);
         break;
 
-    case 0x39: 
+    case 0x39:
         setReg16 = cpu->setHL;
-        getReg16 = cpu -> getHL;
+        getReg16 = cpu->getHL;
         addr = cpu->SP;
         add16(cpu, setReg16, getReg16, addr);
         break;
 
-    case 0xE8: 
-        val = cpu->memory[cpu->PC+1];
-        uint32_t result = (uint32_t) cpu->SP + (uint32_t) val;
+    case 0xE8:
+        val = cpu->memory[cpu->PC + 1];
+        uint32_t result = (uint32_t)cpu->SP + (uint32_t)val;
         cpu->AF.flags.Z = 0;
         cpu->AF.flags.N = 0;
         cpu->AF.flags.H = ((cpu->SP & 0x0FFF) + (val & 0x0FFF)) > 0x0FFF;
         cpu->AF.flags.C = result > 0xFFFF;
-        cpu->SP = (uint16_t) (result & 0xFFFF);
+        cpu->SP = (uint16_t)(result & 0xFFFF);
         break;
 
-//INC
-case 0x03: 
-    setReg16 = cpu->setBC;
-    getReg16 = cpu->getBC;
-    add16(cpu, setReg16, getReg16, 1);
-    break;
+    // INC
+    case 0x03:
+        setReg16 = cpu->setBC;
+        getReg16 = cpu->getBC;
+        add16(cpu, setReg16, getReg16, 1);
+        break;
 
-case 0x13: 
-    setReg16 = cpu->setDE;
-    getReg16 = cpu->getDE;
-    add16(cpu, setReg16, getReg16, 1);
-    break;
+    case 0x13:
+        setReg16 = cpu->setDE;
+        getReg16 = cpu->getDE;
+        add16(cpu, setReg16, getReg16, 1);
+        break;
 
-case 0x23: 
-    setReg16 = cpu->setHL;
-    getReg16 = cpu->getHL;
-    add16(cpu, setReg16, getReg16, 1);
-    break;
+    case 0x23:
+        setReg16 = cpu->setHL;
+        getReg16 = cpu->getHL;
+        add16(cpu, setReg16, getReg16, 1);
+        break;
 
-case 0x33: 
-    setReg16 = cpu->setSP;
-    getReg16 = cpu->getSP;
-    add16(cpu, setReg16, getReg16, 1);
-    break;
+    case 0x33:
+        setReg16 = cpu->setSP;
+        getReg16 = cpu->getSP;
+        add16(cpu, setReg16, getReg16, 1);
+        break;
 
-//DEC
-case 0x0B: 
-    setReg16 = cpu->setBC;
-    getReg16 = cpu->getBC;
-    add16(cpu, setReg16, getReg16, -1);
-    break;
+    // DEC
+    case 0x0B:
+        setReg16 = cpu->setBC;
+        getReg16 = cpu->getBC;
+        add16(cpu, setReg16, getReg16, -1);
+        break;
 
-case 0x1B: 
-    setReg16 = cpu->setDE;
-    getReg16 = cpu->getDE;
-    add16(cpu, setReg16, getReg16, -1);
-    break;
+    case 0x1B:
+        setReg16 = cpu->setDE;
+        getReg16 = cpu->getDE;
+        add16(cpu, setReg16, getReg16, -1);
+        break;
 
-case 0x2B: 
-    setReg16 = cpu->setHL;
-    getReg16 = cpu->getHL;
-    add16(cpu, setReg16, getReg16, -1);
-    break;
+    case 0x2B:
+        setReg16 = cpu->setHL;
+        getReg16 = cpu->getHL;
+        add16(cpu, setReg16, getReg16, -1);
+        break;
 
-case 0x3B: 
-    setReg16 = cpu->setSP;
-    getReg16 = cpu->getSP;
-    add16(cpu, setReg16, getReg16, -1);
-    break;
-
-    
+    case 0x3B:
+        setReg16 = cpu->setSP;
+        getReg16 = cpu->getSP;
+        add16(cpu, setReg16, getReg16, -1);
+        break;
     }
 }
