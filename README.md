@@ -1,5 +1,5 @@
 # GB (Z80) Emulator
-Creating a GameBoy Emulator (similar to Z80) from scratch in C with the ultimate goal of running Pokemon Red and eventually full emulation. Will flesh out README as progress comes along.
+Creating a GameBoy Emulator (similar CPU to Z80) from scratch in C with the ultimate goal of running Pokemon Red and eventually full emulation. Will flesh out README as progress comes along.
 
 ## Dependencies
 
