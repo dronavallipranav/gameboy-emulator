@@ -496,10 +496,13 @@ void ALU(Z80_State *cpu, uint8_t opcode)
         break;
 
     case 0xE8: 
-        setReg16 = cpu->setSP;
-        getReg16 = cpu -> getSP;
         val = cpu->memory[cpu->PC+1];
-        add16(cpu, setReg16, getReg16, addr);
+        uint32_t result = (uint32_t) cpu->SP + (uint32_t) val;
+        cpu->AF.flags.Z = 0;
+        cpu->AF.flags.N = 0;
+        cpu->AF.flags.H = ((cpu->SP & 0x0FFF) + (val & 0x0FFF)) > 0x0FFF;
+        cpu->AF.flags.C = result > 0xFFFF;
+        cpu->SP = (uint16_t) (result & 0xFFFF);
         break;
 
 //INC
