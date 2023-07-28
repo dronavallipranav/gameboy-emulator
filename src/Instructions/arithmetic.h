@@ -3,7 +3,7 @@
 #include <stdbool.h>
 void add8(Z80_State *cpu, uint8_t reg, bool carryStatus);
 
-void add16(Z80_State *cpu, uint16_t reg);
+void add16(Z80_State *cpu, void(*setReg16)(Z80_State*, uint16_t), uint16_t(*getReg)(Z80_State*), uint16_t value);
 
 void addImm(Z80_State *cpu, uint16_t imm);
 
