@@ -14,6 +14,7 @@ add_library(z80_lib
     src/cartridge.c
     ${PROJECT_SOURCE_DIR}/src/Instructions/arithmetic.c
     ${PROJECT_SOURCE_DIR}/src/Instructions/movement.c
+    ${PROJECT_SOURCE_DIR}/src/Instructions/extended.c
 )
 
 

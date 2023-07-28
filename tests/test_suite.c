@@ -4,6 +4,7 @@
 #include "test_arithmetic.c"
 #include "test_cartridge.c"
 #include "test_movement.c"
+#include "test_extended.c"
 
 int main() {
     CU_pSuite suite = NULL;
@@ -28,6 +29,11 @@ int main() {
     }
 
     if (add_loadReg_tests(suite) != 0) {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
+
+     if (add_extended_tests(suite) != 0) {
         CU_cleanup_registry();
         return CU_get_error();
     }
