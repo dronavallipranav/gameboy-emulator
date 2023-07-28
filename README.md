@@ -21,4 +21,10 @@ Running the test suite:
 $cd build
 $./z80_tests
 ```
+---
+**NOTE**
+
+Replace the rom filepath in test_cartridge.c with the filepath of the pokemon red rom on your local machine, and/or comment out add_cartridge_tests in test_suite.c
+
+---
 
