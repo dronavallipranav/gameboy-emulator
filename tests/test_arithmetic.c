@@ -14,14 +14,15 @@ void test_add8() {
 }
 
 void test_add16() {
-    
     Z80_State cpu;
     initCPU(&cpu);
-    cpu.AF.A = 10;
-    cpu.BC_pair = 20;
-    add16(&cpu, cpu.BC_pair);
-    CU_ASSERT_EQUAL(cpu.AF.A, 30);
-    
+    cpu.HL_pair = 0x0F00;
+    cpu.BC_pair = 0x0100;
+    add16(&cpu, cpu.setHL, cpu.getHL, cpu.BC_pair);
+    CU_ASSERT_EQUAL(cpu.HL_pair, 0x1000);
+    CU_ASSERT_TRUE(cpu.AF.flags.N == 0);
+    CU_ASSERT_TRUE(cpu.AF.flags.H == 1);
+    CU_ASSERT_TRUE(cpu.AF.flags.C == 0);
 }
 
 void test_addImm() {
@@ -140,6 +141,22 @@ void test_dec8() {
     
 }
 
+void test_inc16() {
+    Z80_State cpu;
+    initCPU(&cpu);
+    cpu.HL_pair = 0x0F00;
+    add16(&cpu, cpu.setHL, cpu.getHL, 1);
+    CU_ASSERT_EQUAL(cpu.HL_pair, 0x0F01);
+}
+
+void test_dec16() {
+    Z80_State cpu;
+    initCPU(&cpu);
+    cpu.HL_pair = 0x0F00;
+    add16(&cpu, cpu.setHL, cpu.getHL, -1);
+    CU_ASSERT_EQUAL(cpu.HL_pair, 0x0EFF);
+}
+
 int add_arithmetic_tests(CU_pSuite suite) {
     if (NULL == CU_add_test(suite, "Test Add8", test_add8)) {
         return -1; 
@@ -186,6 +203,14 @@ int add_arithmetic_tests(CU_pSuite suite) {
     }
 
     if (NULL == CU_add_test(suite, "Test dec8", test_dec8)) {
+        return -1; 
+    }
+
+    if (NULL == CU_add_test(suite, "Test inc16", test_inc16)) {
+        return -1; 
+    }
+
+    if (NULL == CU_add_test(suite, "Test dec16", test_dec16)) {
         return -1; 
     }
     return 0;
