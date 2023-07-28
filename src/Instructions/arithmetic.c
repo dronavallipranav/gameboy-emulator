@@ -13,9 +13,11 @@ void add8(Z80_State *cpu, uint8_t reg, bool carryStatus)
     cpu->AF.A = result & 0xFF;
 }
 
-void add16(Z80_State *cpu, uint16_t reg)
+void add16(Z80_State *cpu, uint16_t(*getReg)(Z80_State*), void(*setReg)(Z80_State*, uint16_t), uint16_t reg)
 {
-    cpu->AF.A += reg;
+    uint16_t val = getReg(cpu);
+    val += reg;
+    setReg(cpu, val);
 }
 
 void addImm(Z80_State *cpu, uint16_t imm)
