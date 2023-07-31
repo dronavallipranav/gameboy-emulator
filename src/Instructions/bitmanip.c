@@ -1,4 +1,5 @@
 #include <cpu.h>
+#include <bitmanip.h>
 
 void daa(Z80_State *cpu) {
     uint8_t correction = cpu->AF.flags.C ? 0x60 : 0x00;
@@ -37,6 +38,37 @@ void scf(Z80_State *cpu){
     cpu->AF.flags.H = 0;
 }
 
+void rotate(Z80_State* cpu, bool left, bool circular, uint8_t(*getReg)(Z80_State*), void(*setReg)(Z80_State*, uint8_t)) {
+    uint8_t val = getReg(cpu);  // Get register value
+    //left rotate case
+    if (left) {  
+        uint8_t high_bit = val & 0x80;
+        val <<= 1;
+        //circular left shift case, moves msb to lsb
+        if (circular) { 
+            val |= (high_bit >> 7);
+        }
+
+        cpu->AF.flags.C = high_bit != 0; 
+    } else {  
+        uint8_t low_bit = val & 0x01;
+        val >>= 1;
+        //circular right shift case, moves lsb to msb
+        if (circular) {  
+            val |= (low_bit << 7);
+        }
+
+        cpu->AF.flags.C = low_bit != 0; 
+    }
+
+    // Set flags
+    cpu->AF.flags.Z = (val == 0); 
+    cpu->AF.flags.N = 0; 
+    cpu->AF.flags.H = 0;  
+
+    setReg(cpu, val);  
+}
+
 handle_manip(Z80_State *cpu, uint8_t opcode){
     switch (opcode){
     case 0x27:
@@ -71,6 +103,22 @@ handle_manip(Z80_State *cpu, uint8_t opcode){
     //EI
     case 0xFB:
         cpu->EI_status = true;
+        break;
+
+    case 0x07:
+        rotate(cpu, true, true, cpu->getA, cpu->setA);
+        break;
+
+    case 0x17:
+        rotate(cpu, true, false, cpu->getA, cpu->setA);
+        break;
+
+    case 0x0F:
+        rotate(cpu, false, true, cpu->getA, cpu->setA);
+        break;
+
+    case 0x1F:
+        rotate(cpu, false, false, cpu->getA, cpu->setA);
         break;
     }
 }

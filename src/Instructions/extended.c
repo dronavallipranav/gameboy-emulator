@@ -1,6 +1,7 @@
 #include <extended.h>
 #include <stdint.h>
 #include <cpu.h>
+#include <bitmanip.h>
 
 void swap(Z80_State *cpu, uint8_t *bits)
 {
@@ -61,12 +62,191 @@ void handler_cp(Z80_State *cpu, uint8_t opcode)
         swap(cpu, &val);
         cpu->HL.L = val;
         break;
-    
+
     case 0x36:
         val = cpu->memory[cpu->HL_pair];
         swap(cpu, &val);
         cpu->memory[cpu->HL_pair] = val;
         break;
-    
+
+    // RLC
+    case 0x07:
+        rotate(cpu, true, true, cpu->getA, cpu->setA);
+        break;
+
+    case 0x00:
+        rotate(cpu, true, true, cpu->getB, cpu->setB);
+        break;
+
+    case 0x01:
+        rotate(cpu, true, true, cpu->getC, cpu->setC);
+        break;
+
+    case 0x02:
+        rotate(cpu, true, true, cpu->getD, cpu->setD);
+        break;
+
+    case 0x03:
+        rotate(cpu, true, true, cpu->getE, cpu->setE);
+        break;
+
+    case 0x04:
+        rotate(cpu, true, true, cpu->getH, cpu->setH);
+        break;
+
+    case 0x05:
+        rotate(cpu, true, true, cpu->getL, cpu->setL);
+        break;
+
+    // RLC (HL)
+    case 0x06:
+        val = cpu->memory[cpu->HL_pair];
+        uint8_t high_bit = val & 0x80;
+        val <<= 1;
+
+        val |= (high_bit >> 7);
+
+        cpu->AF.flags.C = high_bit != 0;
+
+        cpu->AF.flags.Z = (val == 0);
+        cpu->AF.flags.N = 0;
+        cpu->AF.flags.H = 0;
+
+        cpu->memory[cpu->HL_pair] = val;
+        break;
+
+    // RL
+    case 0x17:
+        rotate(cpu, true, false, cpu->getA, cpu->setA);
+        break;
+
+    case 0x10:
+        rotate(cpu, true, false, cpu->getB, cpu->setB);
+        break;
+
+    case 0x11:
+        rotate(cpu, true, false, cpu->getC, cpu->setC);
+        break;
+
+    case 0x12:
+        rotate(cpu, true, false, cpu->getD, cpu->setD);
+        break;
+
+    case 0x13:
+        rotate(cpu, true, false, cpu->getE, cpu->setE);
+        break;
+
+    case 0x14:
+        rotate(cpu, true, false, cpu->getH, cpu->setH);
+        break;
+
+    case 0x15:
+        rotate(cpu, true, false, cpu->getL, cpu->setL);
+        break;
+
+    // RL (HL)
+    case 0x16:
+        val = cpu->memory[cpu->HL_pair];
+        uint8_t high_bit = val & 0x80;
+        val <<= 1;
+
+        cpu->AF.flags.C = high_bit != 0;
+
+        cpu->AF.flags.Z = (val == 0);
+        cpu->AF.flags.N = 0;
+        cpu->AF.flags.H = 0;
+
+        cpu->memory[cpu->HL_pair] = val;
+        break;
+
+        // RRC
+    case 0x0F:
+        rotate(cpu, false, true, cpu->getA, cpu->setA);
+        break;
+
+    case 0x08:
+        rotate(cpu, false, true, cpu->getB, cpu->setB);
+        break;
+
+    case 0x09:
+        rotate(cpu, false, true, cpu->getC, cpu->setC);
+        break;
+
+    case 0x0A:
+        rotate(cpu, false, true, cpu->getD, cpu->setD);
+        break;
+
+    case 0x0B:
+        rotate(cpu, false, true, cpu->getE, cpu->setE);
+        break;
+
+    case 0x0C:
+        rotate(cpu, false, true, cpu->getH, cpu->setH);
+        break;
+
+    case 0x0D:
+        rotate(cpu, false, true, cpu->getL, cpu->setL);
+        break;
+
+    // RRC (HL)
+    case 0x0E:
+        val = cpu->memory[cpu->HL_pair];
+        uint8_t low_bit = val & 0x01;
+        val >>= 1;
+
+        val |= (low_bit << 7);
+
+        cpu->AF.flags.C = low_bit != 0;
+
+        cpu->AF.flags.Z = (val == 0);
+        cpu->AF.flags.N = 0;
+        cpu->AF.flags.H = 0;
+
+        cpu->memory[cpu->HL_pair] = val;
+        break;
+
+    // RR
+    case 0x1F:
+        rotate(cpu, false, false, cpu->getA, cpu->setA);
+        break;
+
+    case 0x18:
+        rotate(cpu, false, false, cpu->getB, cpu->setB);
+        break;
+
+    case 0x19:
+        rotate(cpu, false, false, cpu->getC, cpu->setC);
+        break;
+
+    case 0x1A:
+        rotate(cpu, false, false, cpu->getD, cpu->setD);
+        break;
+
+    case 0x1B:
+        rotate(cpu, false, false, cpu->getE, cpu->setE);
+        break;
+
+    case 0x1C:
+        rotate(cpu, false, false, cpu->getH, cpu->setH);
+        break;
+
+    case 0x1D:
+        rotate(cpu, false, false, cpu->getL, cpu->setL);
+        break;
+
+    // RR (HL)
+    case 0x1E:
+        val = cpu->memory[cpu->HL_pair];
+        uint8_t low_bit = val & 0x01;
+        val >>= 1;
+
+        cpu->AF.flags.C = low_bit != 0;
+
+        cpu->AF.flags.Z = (val == 0);
+        cpu->AF.flags.N = 0;
+        cpu->AF.flags.H = 0;
+
+        cpu->memory[cpu->HL_pair] = val;
+        break;
     }
 }
