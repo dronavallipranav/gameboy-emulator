@@ -10,9 +10,9 @@ include_directories(${SDL2_INCLUDE_DIRS})
 #Link openGL library based on OS
 add_executable(SDL2Test src/main.c)
 if(APPLE)
-    target_link_libraries(SDL2Test ${SDL2_LIBRARIES} "-framework OpenGL")
+    target_link_libraries(SDL2Test ${SDL2_LIBRARIES} z80_lib "-framework OpenGL")
 else()
-    target_link_libraries(SDL2Test ${SDL2_LIBRARIES} GL)
+    target_link_libraries(SDL2Test ${SDL2_LIBRARIES} z80_lib GL)
 endif()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src/instructions)
