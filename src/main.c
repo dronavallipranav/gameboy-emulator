@@ -1,5 +1,6 @@
 #include <SDL.h>
 #include <stdbool.h>
+#include <cpu.h>
 
 //Change linkage based on OS
 #if defined(__APPLE__)
@@ -10,6 +11,10 @@
 #endif
 
 int main() {
+
+    Z80_State cpu;
+    initCPU(&cpu);
+
     if (SDL_Init(SDL_INIT_VIDEO) < 0) { 
         printf("Error: %s\n", SDL_GetError());
         return 1;
@@ -36,10 +41,16 @@ int main() {
                 quit = true;
             }
         }
- 
+    
+        if(!cpu.Stop){
         glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        SDL_GL_SwapWindow(window); 
+        SDL_GL_SwapWindow(window);
+        }else{
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        SDL_GL_SwapWindow(window);
+        } 
     }
 
     SDL_GL_DeleteContext(context);

@@ -166,6 +166,6 @@ cpu->getSP = getSP;
 cpu->setSP = setSP;
 
 cpu->Halt = false;
- 
+cpu->Stop = false;
 }
 
