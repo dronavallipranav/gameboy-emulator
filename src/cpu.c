@@ -167,5 +167,10 @@ cpu->setSP = setSP;
 
 cpu->Halt = false;
 cpu->Stop = false;
+
+cpu->DI_status = false;
+cpu->interrupt_status = true;
+cpu->nextInstr = false;
+cpu->EI_status = false;
 }
 

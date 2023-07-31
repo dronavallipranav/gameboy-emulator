@@ -35,13 +35,34 @@ int main() {
 
     SDL_Event e;
     bool quit = false;
+    uint8_t DINextInstr = 0;
+    uint8_t EINextInstr = 0;
     while (!quit) {
         while (SDL_PollEvent(&e) != 0) {
             if (e.type == SDL_QUIT) {
                 quit = true;
             }
         }
-    
+
+        //TO DO: FETCH/EXECUTE NEXT INSTR
+
+        if(cpu.DI_status){
+            DINextInstr++;
+            if(cpu.DI_status && DINextInstr == 2){
+                DINextInstr = 0;
+                cpu.DI_status = false;
+                cpu.interrupt_status = false;
+            }
+        }
+        if(cpu.EI_status){
+            EINextInstr++;
+            if(cpu.EI_status && EINextInstr == 2){
+                EINextInstr = 0;
+                cpu.EI_status = false;
+                cpu.interrupt_status = true;
+            }
+        }
+
         if(!cpu.Stop){
         glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);

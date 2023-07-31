@@ -108,7 +108,12 @@ typedef struct Z80_State {
 
   bool Halt;
   bool Stop;
-  
+
+  bool DI_status;
+  bool interrupt_status;
+  bool nextInstr;
+  uint8_t EI_status;
+
 } Z80_State;
 
 void initCPU(Z80_State *cpu);
