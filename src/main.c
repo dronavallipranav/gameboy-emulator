@@ -1,6 +1,7 @@
 #include <SDL.h>
 #include <stdbool.h>
 
+//Change linkage based on OS
 #if defined(__APPLE__)
     #include <OpenGL/gl.h>
     #define GL_SILENCE_DEPRECATION

@@ -7,6 +7,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -g")
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS})
 
+#Link openGL library based on OS
 add_executable(SDL2Test src/main.c)
 if(APPLE)
     target_link_libraries(SDL2Test ${SDL2_LIBRARIES} "-framework OpenGL")
