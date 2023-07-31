@@ -165,6 +165,7 @@ cpu->setDE = setDE;
 cpu->getSP = getSP;
 cpu->setSP = setSP;
 
+cpu->Halt = false;
  
 }
 

@@ -1,6 +1,7 @@
 #ifndef CPU_H
 #define CPU_H
 #include<stdint.h>
+#include <stdbool.h>
 
 //64KB of memory in Z80
 #define MEMORY_SIZE 65536
@@ -104,6 +105,8 @@ typedef struct Z80_State {
 
   //TO DO: IMPLEMENT CARTRIDGE MBC MATCHING FOR MMU
   uint16_t MBC;
+
+  bool Halt;
 
 } Z80_State;
 

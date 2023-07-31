@@ -51,5 +51,13 @@ handle_manip(Z80_State *cpu, uint8_t opcode){
     case 0x37:
         scf(cpu);
         break;
+    //NOP
+    case 0x00:
+        break;
+
+    case 0x76:
+        cpu->Halt = true;
+        break;
+    
     }
 }
