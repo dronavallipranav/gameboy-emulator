@@ -248,5 +248,112 @@ void handler_cp(Z80_State *cpu, uint8_t opcode)
 
         cpu->memory[cpu->HL_pair] = val;
         break;
+
+    // SLA
+    case 0x27:
+        shift(cpu, true, false, cpu->getA, cpu->setA);
+        break;
+
+    case 0x20:
+        shift(cpu, true, false, cpu->getB, cpu->setB);
+        break;
+    case 0x21:
+        shift(cpu, true, false, cpu->getC, cpu->setC);
+        break;
+    case 0x22:
+        shift(cpu, true, false, cpu->getD, cpu->setD);
+        break;
+    case 0x23:
+        shift(cpu, true, false, cpu->getE, cpu->setE);
+        break;
+    case 0x24:
+        shift(cpu, true, false, cpu->getH, cpu->setH);
+        break;
+    case 0x25:
+        shift(cpu, true, false, cpu->getL, cpu->setL);
+        break;
+    case 0x26:
+        val = cpu->memory[cpu->HL_pair];
+        uint8_t msb = val & 0x80;
+        val <<= 1;
+        cpu->AF.flags.C = msb != 0;
+
+        cpu->AF.flags.Z = (val == 0);
+        cpu->AF.flags.N = 0;
+        cpu->AF.flags.H = 0;
+
+        cpu->memory[cpu->HL_pair] = val;
+        break;
+
+    // SRA
+    case 0x2F:
+        shift(cpu, false, true, cpu->getA, cpu->setA);
+        break;
+    case 0x28:
+        shift(cpu, false, true, cpu->getB, cpu->setB);
+        break;
+    case 0x29:
+        shift(cpu, false, true, cpu->getC, cpu->setC);
+        break;
+    case 0x2A:
+        shift(cpu, false, true, cpu->getD, cpu->setD);
+        break;
+    case 0x2B:
+        shift(cpu, false, true, cpu->getE, cpu->setE);
+        break;
+    case 0x2C:
+        shift(cpu, false, true, cpu->getH, cpu->setH);
+        break;
+    case 0x2D:
+        shift(cpu, false, true, cpu->getL, cpu->setL);
+        break;
+    case 0x2E:
+        val = cpu->memory[cpu->HL_pair];
+        uint8_t msb = val & 0x80;
+        val >>= 1;
+        val |= msb;
+
+        cpu->AF.flags.C = (val & 0x01) != 0;
+
+        cpu->AF.flags.Z = (val == 0);
+        cpu->AF.flags.N = 0;
+        cpu->AF.flags.H = 0;
+
+        cpu->memory[cpu->HL_pair] = val;
+        break;
+
+    // SRL
+    case 0x3F:
+        shift(cpu, false, false, cpu->getA, cpu->setA);
+        break;
+    case 0x38:
+        shift(cpu, false, false, cpu->getB, cpu->setB);
+        break;
+    case 0x39:
+        shift(cpu, false, false, cpu->getC, cpu->setC);
+        break;
+    case 0x3A:
+        shift(cpu, false, false, cpu->getD, cpu->setD);
+        break;
+    case 0x3B:
+        shift(cpu, false, false, cpu->getE, cpu->setE);
+        break;
+    case 0x3C:
+        shift(cpu, false, false, cpu->getH, cpu->setH);
+        break;
+    case 0x3D:
+        shift(cpu, false, false, cpu->getL, cpu->setL);
+        break;
+    case 0x3E:
+        val = cpu->memory[cpu->HL_pair];
+        val >>= 1;
+
+        cpu->AF.flags.C = (val & 0x01) != 0;
+        cpu->AF.flags.Z = (val == 0);
+        cpu->AF.flags.N = 0;
+        cpu->AF.flags.H = 0;
+
+        cpu->memory[cpu->HL_pair] = val;
+        break;
     }
 }

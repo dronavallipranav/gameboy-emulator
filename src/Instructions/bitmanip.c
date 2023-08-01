@@ -69,6 +69,31 @@ void rotate(Z80_State* cpu, bool left, bool circular, uint8_t(*getReg)(Z80_State
     setReg(cpu, val);  
 }
 
+void shift(Z80_State *cpu, bool left, bool keep_msb, uint8_t (*getReg)(Z80_State*), void (*setReg)(Z80_State*, uint8_t)) {
+    uint8_t val = getReg(cpu);
+    uint8_t msb = val & 0x80; 
+    uint8_t bit;
+
+    if (left) {
+        bit = val & 0x80;
+        val <<= 1;
+    } else {
+        bit = val & 0x01;
+        val >>= 1;
+
+        if (keep_msb) {
+            val |= msb;
+        }
+    }
+
+    cpu->AF.flags.C = bit != 0;
+    cpu->AF.flags.Z = (val == 0);  
+    cpu->AF.flags.N = 0; 
+    cpu->AF.flags.H = 0; 
+
+    setReg(cpu,val);
+}
+
 handle_manip(Z80_State *cpu, uint8_t opcode){
     switch (opcode){
     case 0x27:
@@ -120,5 +145,6 @@ handle_manip(Z80_State *cpu, uint8_t opcode){
     case 0x1F:
         rotate(cpu, false, false, cpu->getA, cpu->setA);
         break;
+
     }
 }
