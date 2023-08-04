@@ -355,5 +355,6 @@ void handler_cp(Z80_State *cpu, uint8_t opcode)
 
         cpu->memory[cpu->HL_pair] = val;
         break;
+        
     }
 }
