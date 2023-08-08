@@ -46,6 +46,7 @@
 
 typedef struct MMU {
     Cartridge *cartridge;
+    uint8_t cart_memory[CART_SIZE];
     uint8_t video_ram[VIDEO_RAM_SIZE];
     uint8_t switch_ram[SWITCH_RAM_SIZE];
     uint8_t internal_ram[INTERNAL_RAM_SIZE];

@@ -2,6 +2,7 @@
 #define CPU_H
 #include<stdint.h>
 #include <stdbool.h>
+#include <mmu.h>
 
 //64KB of memory in Z80
 #define MEMORY_SIZE 65536
@@ -38,6 +39,9 @@ typedef struct {
 } AF_Register;
 
 typedef struct Z80_State {
+
+  //Create mmu associated with CPU
+  MMU mmu;
   //Memory Space of Z80
   uint8_t memory[MEMORY_SIZE]; 
   //8-bit registers
