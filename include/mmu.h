@@ -62,6 +62,7 @@ typedef struct MMU {
 MMU *mmu_create(Cartridge *cartridge) {
     MMU *mmu = (MMU*) malloc(sizeof(MMU));
     mmu->cartridge = cartridge;
+    memset(cart_memory, 0, CART_SIZE);
     memset(mmu->video_ram, 0, VIDEO_RAM_SIZE);
     memset(mmu->switch_ram, 0, SWITCH_RAM_SIZE);
     memset(mmu->internal_ram, 0, INTERNAL_RAM_SIZE);
@@ -73,4 +74,29 @@ MMU *mmu_create(Cartridge *cartridge) {
     memset(mmu->internal_high_ram, 0, INTERNAL_HIGH_RAM_SIZE);
     mmu->interrupt_enable = 0;
     return mmu;
+}
+
+void load_memory(MMU* mmu, const char* filename) {
+    FILE* file = fopen(filename, "rb");
+    if (file == NULL) {
+        fprintf(stderr, "Failed to open file %s\n", filename);
+        exit(1);
+    }
+
+    // Get the file size.
+    fseek(file, 0, SEEK_END);
+    long file_size = ftell(file);
+    fseek(file, 0, SEEK_SET);
+
+    // Allocate memory for the ROM.
+    mmu -> cart_memory = (uint8_t*) malloc(file_size);
+    if (cartridge->rom == NULL) {
+        fprintf(stderr, "Failed to allocate memory for ROM\n");
+        exit(1);
+    }
+
+     //Load the ROM data into memory.
+    fread(mmu->cart_memory file_size, 1, file);
+
+    fclose(file);
 }

@@ -41,7 +41,7 @@ typedef struct {
 typedef struct Z80_State {
 
   //Create mmu associated with CPU
-  MMU mmu;
+  MMU* mmu;
   //Memory Space of Z80
   uint8_t memory[MEMORY_SIZE]; 
   //8-bit registers

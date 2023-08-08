@@ -172,5 +172,6 @@ cpu->DI_status = false;
 cpu->interrupt_status = true;
 cpu->nextInstr = false;
 cpu->EI_status = 0;
+load_memory(cpu -> mmu, "/Users/pdronavalli/Downloads/pokemon_red.gb");
 }
 
