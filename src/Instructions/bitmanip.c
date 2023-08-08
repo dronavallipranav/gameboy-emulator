@@ -94,7 +94,7 @@ void shift(Z80_State *cpu, bool left, bool keep_msb, uint8_t (*getReg)(Z80_State
     setReg(cpu,val);
 }
 
-handle_manip(Z80_State *cpu, uint8_t opcode){
+void handle_manip(Z80_State *cpu, uint8_t opcode){
     switch (opcode){
     case 0x27:
         daa(cpu);
