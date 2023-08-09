@@ -3,6 +3,7 @@
 #include "../include/cpu.h"
 #include <stdlib.h>
 #include <string.h>
+#include <mmu.h>
 
 uint8_t getA(Z80_State *cpu) {
   return cpu->AF.A;
@@ -172,6 +173,12 @@ cpu->DI_status = false;
 cpu->interrupt_status = true;
 cpu->nextInstr = false;
 cpu->EI_status = 0;
+cpu->mmu = malloc(sizeof(MMU));
+if (cpu->mmu == NULL) {
+    fprintf(stderr, "Failed to allocate memory for MMU\n");
+    exit(1);
+}
+init_mmu(cpu->mmu);
 load_memory(cpu -> mmu, "/Users/pdronavalli/Downloads/pokemon_red.gb");
 }
 
