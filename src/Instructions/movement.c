@@ -1,6 +1,8 @@
 #include <movement.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdio.h>
+
  /*
  This function loads an immediate 8 bit value into specified register using function pointer
  @param: imm - 8-bit immediate value
@@ -487,6 +489,10 @@
         setReg = cpu->setL;  
         getReg = cpu->getA;
         break;
+
+        default:
+            fprintf(stderr, "Unhandled CB opcode: 0x%02X at PC: 0x%04X\n", opcode, cpu->PC);
+            exit(1);
 
     }
     if(status){

@@ -1,6 +1,7 @@
 #include <cpu.h>
 #include <arithmetic.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 void add8(Z80_State *cpu, uint8_t reg, bool carryStatus)
 {
@@ -554,5 +555,9 @@ void ALU(Z80_State *cpu, uint8_t opcode)
         getReg16 = cpu->getSP;
         add16(cpu, setReg16, getReg16, -1);
         break;
+
+    default:
+            fprintf(stderr, "Unhandled CB opcode: 0x%02X at PC: 0x%04X\n", opcode, cpu->PC);
+            exit(1);
     }
 }

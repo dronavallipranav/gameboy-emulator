@@ -2,6 +2,8 @@
 #include <stdint.h>
 #include <cpu.h>
 #include <bitmanip.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 void swap(Z80_State *cpu, uint8_t *bits)
 {
@@ -16,7 +18,7 @@ void swap(Z80_State *cpu, uint8_t *bits)
     cpu->AF.flags.C = 0;
 }
 
-void handler_cp(Z80_State *cpu, uint8_t opcode)
+void handler_cb(Z80_State *cpu, uint8_t opcode)
 {
     uint8_t val;
     switch (opcode)
@@ -355,6 +357,9 @@ void handler_cp(Z80_State *cpu, uint8_t opcode)
 
         cpu->memory[cpu->HL_pair] = val;
         break;
+    default:
+            fprintf(stderr, "Unhandled CB opcode: 0x%02X at PC: 0x%04X\n", opcode, cpu->PC);
+            exit(1);
         
     }
 }

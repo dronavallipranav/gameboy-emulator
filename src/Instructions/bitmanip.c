@@ -1,5 +1,6 @@
 #include <cpu.h>
 #include <bitmanip.h>
+#include <stdio.h>
 
 void daa(Z80_State *cpu) {
     uint8_t correction = cpu->AF.flags.C ? 0x60 : 0x00;
@@ -145,6 +146,10 @@ void handle_manip(Z80_State *cpu, uint8_t opcode){
     case 0x1F:
         rotate(cpu, false, false, cpu->getA, cpu->setA);
         break;
+
+    default:
+            fprintf(stderr, "Unhandled CB opcode: 0x%02X at PC: 0x%04X\n", opcode, cpu->PC);
+            exit(1);
 
     }
 }
