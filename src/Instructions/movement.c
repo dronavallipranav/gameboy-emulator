@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdio.h>
+#include <mmu.h>
 
  /*
  This function loads an immediate 8 bit value into specified register using function pointer
@@ -22,7 +23,7 @@
  @param: offset - 16-bit register offset specified by opcode
  */
  void loadFromMem(Z80_State *cpu, void (*setReg)(Z80_State *, uint8_t), uint16_t addr){
-    uint8_t val = cpu -> memory[addr];
+    uint8_t val = read_byte(cpu->mmu, addr);
     setReg(cpu, val);
  }
  /*
@@ -39,6 +40,10 @@
  void loadIntoMem16(Z80_State *cpu, uint16_t(*getReg)(Z80_State *), uint16_t offset){
     cpu -> memory[offset] = getReg(cpu);
  }
+
+ void jump(Z80_State *cpu, uint16_t addr){
+   cpu -> PC = addr;
+ }
   /*
  This function handles all 8-bit loads assuming we are using a little endian system
  @param: opcode - code to specify which load instruction
@@ -46,6 +51,7 @@
  void loadReg(Z80_State *cpu, uint8_t opcode){
     uint16_t addr;
     uint8_t val;
+    uint8_t msb;
     uint8_t (*getReg)(Z80_State *);
     uint16_t (*getReg16)(Z80_State *);
     void (*setReg)(Z80_State *, uint8_t);
@@ -85,7 +91,7 @@
         getReg16 = cpu->getHL;
         setReg16 = cpu->setSP;
         break;
-        case 0xF8:{
+        case 0xF8:
         uint8_t sp_low = cpu->SP & 0xFF;
         int8_t n = cpu->memory[cpu->PC+1];
         uint16_t res = cpu->SP + n;
@@ -105,7 +111,7 @@
         status = false;
         cpu -> PC += 2;
         break;
-        }
+        
 
         //STACK ops
         case 0xF5:
@@ -489,6 +495,11 @@
         setReg = cpu->setL;  
         getReg = cpu->getA;
         break;
+
+        //JP
+        case 0xC3:
+         val = cpu->memory[cpu->PC+1];
+         
 
         default:
             fprintf(stderr, "Unhandled CB opcode: 0x%02X at PC: 0x%04X\n", opcode, cpu->PC);

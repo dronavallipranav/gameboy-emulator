@@ -64,4 +64,6 @@ void init_mmu(MMU *mmu);
 
 void load_memory(MMU* mmu, const char* filename);
 
-#endif // MMU_H
+uint8_t read_byte(MMU *mmu, uint16_t addr);
+
+#endif 
