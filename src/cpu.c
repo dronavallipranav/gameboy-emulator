@@ -3,7 +3,6 @@
 #include "../include/cpu.h"
 #include <stdlib.h>
 #include <string.h>
-#include <mmu.h>
 
 uint8_t getA(Z80_State *cpu) {
   return cpu->AF.A;
@@ -179,6 +178,6 @@ if (cpu->mmu == NULL) {
     exit(1);
 }
 init_mmu(cpu->mmu);
-load_memory(cpu -> mmu, "/Users/pdronavalli/Downloads/pokemon_red.gb");
+load_memory(cpu -> mmu, "/Users/pdronavalli/Downloads/gb-test-roms-master/cpu_instrs/individual/01-special.gb");
 }
 

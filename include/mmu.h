@@ -1,3 +1,5 @@
+#ifndef MMU_H
+#define MMU_H
 #include <stdlib.h>
 #include <stdint.h>
 #include "../include/cartridge.h"
@@ -61,3 +63,5 @@ typedef struct MMU {
 void init_mmu(MMU *mmu);
 
 void load_memory(MMU* mmu, const char* filename);
+
+#endif // MMU_H
