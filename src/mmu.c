@@ -31,7 +31,7 @@ void load_memory(MMU* mmu, const char* filename) {
     fseek(file, 0, SEEK_SET);
 
     
-    mmu -> cart_memory = (uint8_t*) malloc(CART_SIZE);
+    mmu -> cart_memory = (uint8_t*) malloc(file_size);
     if (mmu->cart_memory == NULL) {
         fprintf(stderr, "Failed to allocate memory for ROM\n");
         exit(1);
