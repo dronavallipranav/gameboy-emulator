@@ -2,25 +2,14 @@
 #include <bitmanip.h>
 #include <stdio.h>
 #include <arithmetic.h>
-
-void execute_cycle(Z80_State *cpu, MMU *mmu)
-{
-    while (!cpu->Halt)
-    {
-        // Fetch
-        uint8_t opcode = cpu->mmu->cart_memory[cpu->PC];
-        // Handle and execute instr
-        handle_opcode(cpu, opcode);
-        // inc PC
-        cpu->PC++;
-    }
-}
+#include <movement.h>
+#include <extended.h>
 
 typedef void (*opcode_handler)(Z80_State *cpu, uint8_t opcode);
 
 opcode_handler opcode_table[256];
 
-void init_opcode_table(Z80_State *cpu)
+void init_opcode_table()
 {
     opcode_table[0x27] = handle_manip;
     opcode_table[0x2F] = handle_manip;
@@ -135,6 +124,92 @@ void init_opcode_table(Z80_State *cpu)
     opcode_table[0x1B] = ALU;
     opcode_table[0x2B] = ALU;
     opcode_table[0x3B] = ALU;
+    opcode_table[0x01] = loadReg; 
+    opcode_table[0x11] = loadReg;
+    opcode_table[0x21] = loadReg;
+    opcode_table[0x31] = loadReg;
+    opcode_table[0xF9] = loadReg;
+    opcode_table[0xF8] = loadReg;
+    opcode_table[0x08] = loadReg;
+    opcode_table[0xF5] = loadReg; 
+    opcode_table[0xC5] = loadReg;
+    opcode_table[0xD5] = loadReg;
+    opcode_table[0xE5] = loadReg;
+    opcode_table[0xF1] = loadReg;
+    opcode_table[0xC1] = loadReg;
+    opcode_table[0xD1] = loadReg;
+    opcode_table[0xE1] = loadReg;
+    opcode_table[0x02] = loadReg;
+    opcode_table[0x12] = loadReg;
+    opcode_table[0x77] = loadReg;
+    opcode_table[0xEA] = loadReg;
+    opcode_table[0x3A] = loadReg;
+    opcode_table[0x32] = loadReg;
+    opcode_table[0x2A] = loadReg;
+    opcode_table[0x22] = loadReg;
+    opcode_table[0xE0] = loadReg;
+    opcode_table[0xF0] = loadReg;
+    opcode_table[0x7F] = loadReg;
+    opcode_table[0x78] = loadReg;
+    opcode_table[0x79] = loadReg;
+    opcode_table[0x7A] = loadReg;
+    opcode_table[0x7B] = loadReg;
+    opcode_table[0x7C] = loadReg;
+    opcode_table[0x7D] = loadReg;
+    opcode_table[0x7E] = loadReg;
+    opcode_table[0x0A] = loadReg;
+    opcode_table[0x1A] = loadReg;
+    opcode_table[0xFA] = loadReg;
+    opcode_table[0x3E] = loadReg;
+    opcode_table[0xF2] = loadReg;
+    opcode_table[0xE2] = loadReg;
+    opcode_table[0x40] = loadReg;
+    opcode_table[0x41] = loadReg;
+    opcode_table[0x42] = loadReg;
+    opcode_table[0x43] = loadReg;
+    opcode_table[0x44] = loadReg;
+    opcode_table[0x45] = loadReg;
+    opcode_table[0x46] = loadReg;
+    opcode_table[0x47] = loadReg;
+    opcode_table[0x48] = loadReg;
+    opcode_table[0x49] = loadReg;
+    opcode_table[0x4A] = loadReg;
+    opcode_table[0x4B] = loadReg;
+    opcode_table[0x4C] = loadReg;
+    opcode_table[0x4D] = loadReg;
+    opcode_table[0x4E] = loadReg;
+    opcode_table[0x4F] = loadReg;
+    opcode_table[0x50] = loadReg;
+    opcode_table[0x51] = loadReg;
+    opcode_table[0x52] = loadReg;
+    opcode_table[0x53] = loadReg;
+    opcode_table[0x54] = loadReg;
+    opcode_table[0x55] = loadReg;
+    opcode_table[0x56] = loadReg;
+    opcode_table[0x57] = loadReg;
+    opcode_table[0x58] = loadReg;
+    opcode_table[0x59] = loadReg;
+    opcode_table[0x5A] = loadReg;
+    opcode_table[0x5B] = loadReg;
+    opcode_table[0x5C] = loadReg;
+    opcode_table[0x5D] = loadReg;
+    opcode_table[0x5E] = loadReg;
+    opcode_table[0x60] = loadReg;
+    opcode_table[0x61] = loadReg;
+    opcode_table[0x62] = loadReg;
+    opcode_table[0x63] = loadReg;
+    opcode_table[0x64] = loadReg;
+    opcode_table[0x65] = loadReg;
+    opcode_table[0x66] = loadReg;
+    opcode_table[0x67] = loadReg;
+    opcode_table[0x68] = loadReg;
+    opcode_table[0x69] = loadReg;
+    opcode_table[0x6A] = loadReg;
+    opcode_table[0x6B] = loadReg;
+    opcode_table[0x6C] = loadReg;
+    opcode_table[0x6D] = loadReg;
+    opcode_table[0x6E] = loadReg;
+    opcode_table[0x6F] = loadReg;
 }
 
 void handle_opcode(Z80_State *cpu, uint8_t opcode)
@@ -156,5 +231,19 @@ void handle_opcode(Z80_State *cpu, uint8_t opcode)
             fprintf(stderr, "Unhandled opcode: 0x%02X at PC: 0x%04X\n", opcode, cpu->PC);
             exit(1);
         }
+    }
+}
+
+
+void execute_cycle(Z80_State *cpu)
+{
+    while (!cpu->Halt)
+    {
+        // Fetch
+        uint8_t opcode = cpu->mmu->cart_memory[cpu->PC];
+        // Handle and execute instr
+        handle_opcode(cpu, opcode);
+        // inc PC
+        cpu->PC++;
     }
 }
