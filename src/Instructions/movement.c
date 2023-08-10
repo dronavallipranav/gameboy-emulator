@@ -99,6 +99,7 @@
         setReg16 = cpu->setSP;
         break;
         case 0xF8:
+        {
         uint8_t sp_low = cpu->SP & 0xFF;
         int8_t n = read_byte(cpu->mmu, cpu->PC+1);
         uint16_t res = cpu->SP + n;
@@ -110,9 +111,11 @@
         cpu -> AF.flags.N = 0;
         cpu -> PC += 1;
         status = false;
+        }
         break;
+
         case 0x08:
-        (read_byte(cpu->mmu, cpu->PC+2) << 8) | read_byte(cpu->mmu, cpu->PC+1);
+        addr = (read_byte(cpu->mmu, cpu->PC+2) << 8) | read_byte(cpu->mmu, cpu->PC+1);
         getReg16 = cpu -> getSP;
         loadIntoMem16(cpu, getReg16, addr);
         status = false;
@@ -508,6 +511,7 @@
          val = read_byte(cpu->mmu, cpu->PC+1);
          msb = read_byte(cpu->mmu, cpu->PC+2);
          jump(cpu, (msb << 8) | val);
+         status = false;
          break;
 
         default:
