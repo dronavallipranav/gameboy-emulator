@@ -214,7 +214,7 @@ void init_opcode_table()
 
 void handle_opcode(Z80_State *cpu, uint8_t opcode)
 {
-
+    
     if (opcode == 0xCB)
     {
         uint8_t cb_opcode = cpu->mmu->cart_memory[++cpu->PC];
