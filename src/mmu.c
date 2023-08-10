@@ -31,7 +31,7 @@ void load_memory(MMU* mmu, const char* filename) {
     fseek(file, 0, SEEK_SET);
 
     
-    mmu -> cart_memory = (uint8_t*) malloc(file_size);
+    mmu -> cart_memory = (uint8_t*) malloc(CART_SIZE);
     if (mmu->cart_memory == NULL) {
         fprintf(stderr, "Failed to allocate memory for ROM\n");
         exit(1);
@@ -76,12 +76,10 @@ uint8_t read_byte(MMU *mmu, uint16_t addr) {
     else if (addr == 0xFFFF) {  
         return mmu->interrupt_enable;
     }
-
     return 0xFF;
 }
 
 void write_byte(MMU *mmu, uint16_t addr, uint8_t value) {
-    
     if (addr >= CART_START && addr <= CART_END) {
         mmu->cart_memory[addr] = value;
     } else if (addr >= VIDEO_RAM_START && addr <= VIDEO_RAM_END) {
