@@ -79,3 +79,30 @@ uint8_t read_byte(MMU *mmu, uint16_t addr) {
 
     return 0xFF;
 }
+
+void write_byte(MMU *mmu, uint16_t addr, uint8_t value) {
+    
+    if (addr >= CART_START && addr <= CART_END) {
+        mmu->cart_memory[addr] = value;
+    } else if (addr >= VIDEO_RAM_START && addr <= VIDEO_RAM_END) {
+        mmu->video_ram[addr - VIDEO_RAM_START] = value;
+    } else if (addr >= SWITCH_RAM_START && addr <= SWITCH_RAM_END) {
+        mmu->switch_ram[addr - SWITCH_RAM_START] = value;
+    } else if (addr >= INTERNAL_RAM_START && addr <= INTERNAL_RAM_END) {
+        mmu->internal_ram[addr - INTERNAL_RAM_START] = value;
+    } else if (addr >= ECHO_INTERNAL_RAM_START && addr <= ECHO_INTERNAL_RAM_END) {
+        mmu->internal_ram[addr - ECHO_INTERNAL_RAM_START] = value;
+    } else if (addr >= OAM_START && addr <= OAM_END) {
+        mmu->oam[addr - OAM_START] = value;
+    } else if (addr >= IO_PORT_START && addr <= IO_PORT_END) {
+        mmu->io_ports[addr - IO_PORT_START] = value;
+    } else if (addr >= INTERNAL_HIGH_RAM_START && addr <= INTERNAL_HIGH_RAM_END) {
+        mmu->internal_high_ram[addr - INTERNAL_HIGH_RAM_START] = value;
+    } else if ((addr >= EMPTY_START && addr <= EMPTY_END) ||
+               (addr >= EMPTY_NO_IO_START && addr <= EMPTY_NO_IO_END)) {
+       
+    } else {
+        fprintf(stderr, "Unhandled memory write to addr: 0x%04X\n", addr);
+        exit(1);
+    }
+}
