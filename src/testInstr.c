@@ -5,6 +5,7 @@
 int main(){
     Z80_State cpu;
     initCPU(&cpu);
+    init_opcode_table();
     execute_cycle(&cpu);
-    printf("yay");
+    
 }
