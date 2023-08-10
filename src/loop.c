@@ -210,6 +210,7 @@ void init_opcode_table()
     opcode_table[0x6D] = loadReg;
     opcode_table[0x6E] = loadReg;
     opcode_table[0x6F] = loadReg;
+    opcode_table[0xC3] = loadReg;
 }
 
 void handle_opcode(Z80_State *cpu, uint8_t opcode)
