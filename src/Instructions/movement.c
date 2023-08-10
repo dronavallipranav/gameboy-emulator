@@ -31,14 +31,21 @@
  @param: offset - 16-bit register offset specified by opcode
  */
  void loadIntoMem(Z80_State *cpu, uint8_t(*getReg)(Z80_State *), uint16_t offset){
-    cpu -> memory[offset] = getReg(cpu);
+    write_byte(cpu->mmu, offset, getReg(cpu));
  }
  /*
  This function uses a function pointer to generalize loading a register into memory
  @param: offset - 16-bit register offset specified by opcode
  */
  void loadIntoMem16(Z80_State *cpu, uint16_t(*getReg)(Z80_State *), uint16_t offset){
-    cpu -> memory[offset] = getReg(cpu);
+    uint16_t value = getReg(cpu);
+
+    //Break down the 16-bit value into two 8-bit values
+    uint8_t lsb = value & 0xFF;  
+    uint8_t msb = (value >> 8) & 0xFF;  
+
+    write_byte(cpu->mmu, offset, lsb);     
+    write_byte(cpu->mmu, offset + 1, msb);  
  }
 
  void jump(Z80_State *cpu, uint16_t addr){
@@ -61,27 +68,27 @@
         switch (opcode) {
         //16 bit loads
         case 0x01:
-        addr = (cpu->memory[cpu->PC+2] << 8) | cpu->memory[cpu->PC+1];
+        addr = (read_byte(cpu->mmu, cpu->PC+2) << 8) | read_byte(cpu->mmu, cpu->PC+1);
         setReg16 = cpu->setBC;
         loadImm16(cpu,setReg16, addr);
         status = false;
         break;
         case 0x11:
-        addr = (cpu->memory[cpu->PC+2] << 8) | cpu->memory[cpu->PC+1];
+        addr = (read_byte(cpu->mmu, cpu->PC+2) << 8) | read_byte(cpu->mmu, cpu->PC+1);
         setReg16 = cpu->setDE;
         loadImm16(cpu,setReg16, addr);
         status = false;
         cpu -> PC += 2;
         break;
         case 0x21:
-        addr = (cpu->memory[cpu->PC+2] << 8) | cpu->memory[cpu->PC+1];
+        addr = (read_byte(cpu->mmu, cpu->PC+2) << 8) | read_byte(cpu->mmu, cpu->PC+1);
         setReg16 = cpu->setHL;
         loadImm16(cpu,setReg16, addr);
         status = false;
         cpu -> PC += 2;
         break;
         case 0x31:
-        addr = (cpu->memory[cpu->PC+2] << 8) | cpu->memory[cpu->PC+1];
+        addr = (read_byte(cpu->mmu, cpu->PC+2) << 8) | read_byte(cpu->mmu, cpu->PC+1);
         setReg16 = cpu->setSP;
         loadImm16(cpu,setReg16, addr);
         status = false;
@@ -93,7 +100,7 @@
         break;
         case 0xF8:
         uint8_t sp_low = cpu->SP & 0xFF;
-        int8_t n = cpu->memory[cpu->PC+1];
+        int8_t n = read_byte(cpu->mmu, cpu->PC+1);
         uint16_t res = cpu->SP + n;
         setReg16 = cpu -> setHL;
         loadImm16(cpu, setReg16, res);
@@ -105,7 +112,7 @@
         status = false;
         break;
         case 0x08:
-        addr = (cpu->memory[cpu->PC+2] << 8) | cpu->memory[cpu->PC+1];
+        (read_byte(cpu->mmu, cpu->PC+2) << 8) | read_byte(cpu->mmu, cpu->PC+1);
         getReg16 = cpu -> getSP;
         loadIntoMem16(cpu, getReg16, addr);
         status = false;
@@ -117,51 +124,51 @@
         case 0xF5:
         getReg16 = cpu -> getAF;
         cpu -> SP -= 2;
-        cpu -> memory[cpu->SP] = (uint8_t)(cpu -> AF_pair & 0x00FF);
-        cpu -> memory[cpu->SP+1] = (uint8_t)((cpu -> AF_pair & 0xFF00) >> 8);
+        write_byte(cpu->mmu, cpu->SP, (uint8_t)(cpu -> AF_pair & 0x00FF));
+        write_byte(cpu->mmu, cpu->SP+1, (uint8_t)((cpu -> AF_pair & 0xFF00) >> 8));
         status = false;
         break;
         case 0xC5:
         getReg16 = cpu -> getBC;
         cpu -> SP -= 2;
-        cpu -> memory[cpu->SP] = (uint8_t)(cpu -> AF_pair & 0x00FF);
-        cpu -> memory[cpu->SP+1] = (uint8_t)((cpu -> AF_pair & 0xFF00) >> 8);
+        write_byte(cpu->mmu, cpu->SP, (uint8_t)(cpu -> AF_pair & 0x00FF));
+        write_byte(cpu->mmu, cpu->SP+1, (uint8_t)((cpu -> AF_pair & 0xFF00) >> 8));
         status = false;
         break;
         case 0xD5:
         getReg16 = cpu -> getDE;
         cpu -> SP -= 2;
-        cpu -> memory[cpu->SP] = (uint8_t)(cpu -> AF_pair & 0x00FF);
-        cpu -> memory[cpu->SP+1] = (uint8_t)((cpu -> AF_pair & 0xFF00) >> 8);
+        write_byte(cpu->mmu, cpu->SP, (uint8_t)(cpu -> AF_pair & 0x00FF));
+        write_byte(cpu->mmu, cpu->SP+1, (uint8_t)((cpu -> AF_pair & 0xFF00) >> 8));
         status = false;
         break;
         case 0xE5:
         getReg16 = cpu -> getHL;
         cpu -> SP -= 2;
-        cpu -> memory[cpu->SP] = (uint8_t)(cpu -> AF_pair & 0x00FF);
-        cpu -> memory[cpu->SP+1] = (uint8_t)((cpu -> AF_pair & 0xFF00) >> 8);
+        write_byte(cpu->mmu, cpu->SP, (uint8_t)(cpu -> AF_pair & 0x00FF));
+        write_byte(cpu->mmu, cpu->SP+1, (uint8_t)((cpu -> AF_pair & 0xFF00) >> 8));
         status = false;
         break;
         case 0xF1:
-        addr = ((cpu->memory[cpu->SP+1]) << 8) | cpu->memory[cpu->SP];
+        addr = (read_byte(cpu->mmu, cpu->SP+1) << 8) | read_byte(cpu->mmu, cpu->SP);
         setReg16 = cpu -> setAF;
         loadImm16(cpu, setReg16, addr);
         status = false;
         break;
         case 0xC1:
-        addr = ((cpu->memory[cpu->SP+1]) << 8) | cpu->memory[cpu->SP];
+        addr = (read_byte(cpu->mmu, cpu->SP+1) << 8) | read_byte(cpu->mmu, cpu->SP);
         setReg16 = cpu -> setBC;
         loadImm16(cpu, setReg16, addr);
         status = false;
         break;
         case 0xD1:
-        addr = ((cpu->memory[cpu->SP+1]) << 8) | cpu->memory[cpu->SP];
+        addr = (read_byte(cpu->mmu, cpu->SP+1) << 8) | read_byte(cpu->mmu, cpu->SP);
         setReg16 = cpu -> setDE;
         loadImm16(cpu, setReg16, addr);
         status = false;
         break;
         case 0xE1:
-        addr = ((cpu->memory[cpu->SP+1]) << 8) | cpu->memory[cpu->SP];
+        addr = (read_byte(cpu->mmu, cpu->SP+1) << 8) | read_byte(cpu->mmu, cpu->SP);
         setReg16 = cpu -> setHL;
         loadImm16(cpu, setReg16, addr);
         status = false;
@@ -184,7 +191,7 @@
         break;
         case 0xEA:
         getReg = cpu->getA;
-        addr = (uint16_t) (cpu->memory[cpu->PC+2] << 8) | (uint16_t) cpu->memory[cpu->PC+1];
+        addr = (uint16_t) (read_byte(cpu->mmu, cpu->PC+2) << 8) | read_byte(cpu->mmu, cpu->PC+1);
         loadIntoMem(cpu, getReg, addr);
         status = false;
         break;
@@ -215,14 +222,14 @@
         break;
         case 0xE0:
         getReg = cpu->getA;
-        addr = cpu -> memory[cpu->PC+1] + 0xFF00;
+        addr = read_byte(cpu->mmu, cpu->PC+1) + 0xFF00;
         loadIntoMem(cpu, getReg, addr);
         status = false;
         cpu -> PC += 1;
         break;
         case 0xF0:
         setReg = cpu->setA;
-        addr = cpu -> memory[cpu->PC+1] + 0xFF00;
+        addr = read_byte(cpu->mmu, cpu->PC+1) + 0xFF00;
         loadFromMem(cpu, setReg, addr);
         status = false;
         cpu -> PC += 1;
@@ -272,7 +279,7 @@
         status = false;
         break;
         case 0xFA:
-        val = (cpu->memory[cpu->PC+2] << 8) | cpu->memory[cpu->PC+1];
+        val = (read_byte(cpu->mmu, cpu->PC+2) << 8) | read_byte(cpu->mmu, cpu->PC+1);
         setReg = cpu->setA;
         loadImm(cpu, setReg, val);
         cpu -> PC += 2;
@@ -498,8 +505,10 @@
 
         //JP
         case 0xC3:
-         val = cpu->memory[cpu->PC+1];
-         
+         val = read_byte(cpu->mmu, cpu->PC+1);
+         msb = read_byte(cpu->mmu, cpu->PC+2);
+         jump(cpu, (msb << 8) | val);
+         break;
 
         default:
             fprintf(stderr, "Unhandled CB opcode: 0x%02X at PC: 0x%04X\n", opcode, cpu->PC);
