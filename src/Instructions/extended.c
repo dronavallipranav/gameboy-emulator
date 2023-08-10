@@ -21,6 +21,7 @@ void swap(Z80_State *cpu, uint8_t *bits)
 void handler_cb(Z80_State *cpu, uint8_t opcode)
 {
     uint8_t val;
+    uint8_t temp_bit;
     switch (opcode)
     {
     // SWAP
@@ -103,12 +104,12 @@ void handler_cb(Z80_State *cpu, uint8_t opcode)
     // RLC (HL)
     case 0x06:
         val = cpu->memory[cpu->HL_pair];
-        uint8_t high_bit = val & 0x80;
+        temp_bit = val & 0x80;
         val <<= 1;
 
-        val |= (high_bit >> 7);
+        val |= (temp_bit >> 7);
 
-        cpu->AF.flags.C = high_bit != 0;
+        cpu->AF.flags.C = temp_bit != 0;
 
         cpu->AF.flags.Z = (val == 0);
         cpu->AF.flags.N = 0;
@@ -149,10 +150,10 @@ void handler_cb(Z80_State *cpu, uint8_t opcode)
     // RL (HL)
     case 0x16:
         val = cpu->memory[cpu->HL_pair];
-        uint8_t high_bit = val & 0x80;
+        temp_bit = val & 0x80;
         val <<= 1;
 
-        cpu->AF.flags.C = high_bit != 0;
+        cpu->AF.flags.C = temp_bit != 0;
 
         cpu->AF.flags.Z = (val == 0);
         cpu->AF.flags.N = 0;
@@ -193,12 +194,12 @@ void handler_cb(Z80_State *cpu, uint8_t opcode)
     // RRC (HL)
     case 0x0E:
         val = cpu->memory[cpu->HL_pair];
-        uint8_t low_bit = val & 0x01;
+        temp_bit = val & 0x01;
         val >>= 1;
 
-        val |= (low_bit << 7);
+        val |= (temp_bit << 7);
 
-        cpu->AF.flags.C = low_bit != 0;
+        cpu->AF.flags.C = temp_bit != 0;
 
         cpu->AF.flags.Z = (val == 0);
         cpu->AF.flags.N = 0;
@@ -239,10 +240,10 @@ void handler_cb(Z80_State *cpu, uint8_t opcode)
     // RR (HL)
     case 0x1E:
         val = cpu->memory[cpu->HL_pair];
-        uint8_t low_bit = val & 0x01;
+        temp_bit = val & 0x01;
         val >>= 1;
 
-        cpu->AF.flags.C = low_bit != 0;
+        cpu->AF.flags.C = temp_bit != 0;
 
         cpu->AF.flags.Z = (val == 0);
         cpu->AF.flags.N = 0;
@@ -276,9 +277,9 @@ void handler_cb(Z80_State *cpu, uint8_t opcode)
         break;
     case 0x26:
         val = cpu->memory[cpu->HL_pair];
-        uint8_t msb = val & 0x80;
+        temp_bit = val & 0x80;
         val <<= 1;
-        cpu->AF.flags.C = msb != 0;
+        cpu->AF.flags.C = temp_bit != 0;
 
         cpu->AF.flags.Z = (val == 0);
         cpu->AF.flags.N = 0;
@@ -311,9 +312,9 @@ void handler_cb(Z80_State *cpu, uint8_t opcode)
         break;
     case 0x2E:
         val = cpu->memory[cpu->HL_pair];
-        uint8_t msb = val & 0x80;
+        temp_bit = val & 0x80;
         val >>= 1;
-        val |= msb;
+        val |= temp_bit;
 
         cpu->AF.flags.C = (val & 0x01) != 0;
 
