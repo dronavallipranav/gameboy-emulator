@@ -393,7 +393,7 @@ void handler_cb(Z80_State *cpu, uint8_t opcode)
     case 0x85: resetBit(cpu, 0, cpu->getL, cpu->setL); break;
     case 0x86: 
         val = read_byte(cpu->mmu, cpu->HL_pair);
-        temp_bit = ~(1 <<0);
+        temp_bit = (uint8_t) ~(1 <<0);
         val &= temp_bit;
         write_byte(cpu->mmu, cpu->HL_pair, val);  
     case 0x87: resetBit(cpu, 0, cpu->getA, cpu->setA); break;
@@ -406,7 +406,7 @@ void handler_cb(Z80_State *cpu, uint8_t opcode)
     case 0x8D: resetBit(cpu, 1, cpu->getL, cpu->setL); break;
     case 0x8E: 
         val = read_byte(cpu->mmu, cpu->HL_pair);
-        temp_bit = ~(1 << 1);
+        temp_bit = (uint8_t) ~(1 << 1);
         val &= temp_bit;
         write_byte(cpu->mmu, cpu->HL_pair, val);  
     case 0x8F: resetBit(cpu, 1, cpu->getA, cpu->setA); break;
@@ -420,7 +420,7 @@ void handler_cb(Z80_State *cpu, uint8_t opcode)
     case 0x95: resetBit(cpu, 2, cpu->getL, cpu->setL); break;
     case 0x96: 
         val = read_byte(cpu->mmu, cpu->HL_pair);
-        temp_bit = ~(1 <<2);
+        temp_bit = (uint8_t) ~(1 <<2);
         val &= temp_bit;
         write_byte(cpu->mmu, cpu->HL_pair, val);  
     case 0x97: resetBit(cpu, 2, cpu->getA, cpu->setA); break;
@@ -433,7 +433,7 @@ void handler_cb(Z80_State *cpu, uint8_t opcode)
     case 0x9D: resetBit(cpu, 3, cpu->getL, cpu->setL); break;
     case 0x9E: 
         val = read_byte(cpu->mmu, cpu->HL_pair);
-        temp_bit = ~(1 << 3);
+        temp_bit = (uint8_t) ~(1 << 3);
         val &= temp_bit;
         write_byte(cpu->mmu, cpu->HL_pair, val);  
     case 0x9F: resetBit(cpu, 3, cpu->getA, cpu->setA); break;
@@ -446,7 +446,7 @@ void handler_cb(Z80_State *cpu, uint8_t opcode)
     case 0xA5: resetBit(cpu, 4, cpu->getL, cpu->setL); break;
     case 0xA6: 
         val = read_byte(cpu->mmu, cpu->HL_pair);
-        temp_bit = ~(1 <<4);
+        temp_bit = (uint8_t) ~(1 <<4);
         val &= temp_bit;
         write_byte(cpu->mmu, cpu->HL_pair, val);  
     case 0xA7: resetBit(cpu, 4, cpu->getA, cpu->setA); break;
@@ -459,7 +459,7 @@ void handler_cb(Z80_State *cpu, uint8_t opcode)
     case 0xAD: resetBit(cpu, 5, cpu->getL, cpu->setL); break;
     case 0xAE: 
         val = read_byte(cpu->mmu, cpu->HL_pair);
-        temp_bit = ~(1 << 5);
+        temp_bit = (uint8_t) ~(1 << 5);
         val &= temp_bit;
         write_byte(cpu->mmu, cpu->HL_pair, val);  
     case 0xAF: resetBit(cpu, 5, cpu->getA, cpu->setA); break;
@@ -472,7 +472,7 @@ void handler_cb(Z80_State *cpu, uint8_t opcode)
     case 0xB5: resetBit(cpu, 6, cpu->getL, cpu->setL); break;
     case 0xB6: 
         val = read_byte(cpu->mmu, cpu->HL_pair);
-        temp_bit = ~(1 <<6);
+        temp_bit = (uint8_t) ~(1 <<6);
         val &= temp_bit;
         write_byte(cpu->mmu, cpu->HL_pair, val);  
     case 0xB7: resetBit(cpu, 6, cpu->getA, cpu->setA); break;
@@ -485,7 +485,7 @@ void handler_cb(Z80_State *cpu, uint8_t opcode)
     case 0xBD: resetBit(cpu, 7, cpu->getL, cpu->setL); break;
     case 0xBE: 
         val = read_byte(cpu->mmu, cpu->HL_pair);
-        temp_bit = ~(1 << 7);
+        temp_bit = (uint8_t) ~(1 << 7);
         val &= temp_bit;
         write_byte(cpu->mmu, cpu->HL_pair, val);  
     case 0xBF: resetBit(cpu, 7, cpu->getA, cpu->setA); break;
@@ -498,7 +498,7 @@ void handler_cb(Z80_State *cpu, uint8_t opcode)
     case 0xC4: setBit(cpu, 0, cpu->getH, cpu->setH); break;
     case 0xC5: setBit(cpu, 0, cpu->getL, cpu->setL); break;
     case 0xC6: 
-        uint8_t val = read_byte(cpu->mmu, cpu->HL_pair);
+        val = read_byte(cpu->mmu, cpu->HL_pair);
         val |= (1 << 0);
         write_byte(cpu->mmu, cpu->HL_pair, val);
         break;
@@ -511,7 +511,7 @@ void handler_cb(Z80_State *cpu, uint8_t opcode)
     case 0xCC: setBit(cpu, 1, cpu->getH, cpu->setH); break;
     case 0xCD: setBit(cpu, 1, cpu->getL, cpu->setL); break;
     case 0xCE: 
-        uint8_t val = read_byte(cpu->mmu, cpu->HL_pair);
+        val = read_byte(cpu->mmu, cpu->HL_pair);
         val |= (1 << 1);
         write_byte(cpu->mmu, cpu->HL_pair, val);
         break;
@@ -524,7 +524,7 @@ void handler_cb(Z80_State *cpu, uint8_t opcode)
     case 0xD4: setBit(cpu, 2, cpu->getH, cpu->setH); break;
     case 0xD5: setBit(cpu, 2, cpu->getL, cpu->setL); break;
     case 0xD6: 
-        uint8_t val = read_byte(cpu->mmu, cpu->HL_pair);
+        val = read_byte(cpu->mmu, cpu->HL_pair);
         val |= (1 << 2);
         write_byte(cpu->mmu, cpu->HL_pair, val);
         break;
@@ -537,7 +537,7 @@ void handler_cb(Z80_State *cpu, uint8_t opcode)
     case 0xDC: setBit(cpu, 3, cpu->getH, cpu->setH); break;
     case 0xDD: setBit(cpu, 3, cpu->getL, cpu->setL); break;
     case 0xDE: 
-        uint8_t val = read_byte(cpu->mmu, cpu->HL_pair);
+        val = read_byte(cpu->mmu, cpu->HL_pair);
         val |= (1 << 3);
         write_byte(cpu->mmu, cpu->HL_pair, val);
         break;
@@ -550,7 +550,7 @@ void handler_cb(Z80_State *cpu, uint8_t opcode)
     case 0xE4: setBit(cpu, 4, cpu->getH, cpu->setH); break;
     case 0xE5: setBit(cpu, 4, cpu->getL, cpu->setL); break;
     case 0xE6: 
-        uint8_t val = read_byte(cpu->mmu, cpu->HL_pair);
+        val = read_byte(cpu->mmu, cpu->HL_pair);
         val |= (1 << 4);
         write_byte(cpu->mmu, cpu->HL_pair, val);
         break;
@@ -563,7 +563,7 @@ void handler_cb(Z80_State *cpu, uint8_t opcode)
     case 0xEC: setBit(cpu, 5, cpu->getH, cpu->setH); break;
     case 0xED: setBit(cpu, 5, cpu->getL, cpu->setL); break;
     case 0xEE: 
-        uint8_t val = read_byte(cpu->mmu, cpu->HL_pair);
+        val = read_byte(cpu->mmu, cpu->HL_pair);
         val |= (1 << 5);
         write_byte(cpu->mmu, cpu->HL_pair, val);
         break;
@@ -576,7 +576,7 @@ void handler_cb(Z80_State *cpu, uint8_t opcode)
     case 0xF4: setBit(cpu, 6, cpu->getH, cpu->setH); break;
     case 0xF5: setBit(cpu, 6, cpu->getL, cpu->setL); break;
     case 0xF6: 
-        uint8_t val = read_byte(cpu->mmu, cpu->HL_pair);
+        val = read_byte(cpu->mmu, cpu->HL_pair);
         val |= (1 << 6);
         write_byte(cpu->mmu, cpu->HL_pair, val);
         break;
@@ -589,7 +589,7 @@ void handler_cb(Z80_State *cpu, uint8_t opcode)
     case 0xFC: setBit(cpu, 7, cpu->getH, cpu->setH); break;
     case 0xFD: setBit(cpu, 7, cpu->getL, cpu->setL); break;
     case 0xFE: 
-        uint8_t val = read_byte(cpu->mmu, cpu->HL_pair);
+        val = read_byte(cpu->mmu, cpu->HL_pair);
         val |= (1 << 7);
         write_byte(cpu->mmu, cpu->HL_pair, val);
         break;
@@ -604,7 +604,7 @@ void handler_cb(Z80_State *cpu, uint8_t opcode)
     case 0x44: testBit(cpu, 0, cpu->getH); break;
     case 0x45: testBit(cpu, 0, cpu->getL); break;
     case 0x46: 
-        uint8_t val = read_byte(cpu->mmu, cpu->HL_pair);
+        val = read_byte(cpu->mmu, cpu->HL_pair);
         cpu->AF.flags.Z = ((val & (1 << 0)) == 0);
         cpu->AF.flags.N = 0;
         cpu->AF.flags.H = 1;
@@ -618,7 +618,7 @@ void handler_cb(Z80_State *cpu, uint8_t opcode)
     case 0x4C: testBit(cpu, 1, cpu->getH); break;
     case 0x4D: testBit(cpu, 1, cpu->getL); break;
     case 0x4E: 
-        uint8_t val = read_byte(cpu->mmu, cpu->HL_pair);
+        val = read_byte(cpu->mmu, cpu->HL_pair);
         cpu->AF.flags.Z = ((val & (1 << 1)) == 0);
         cpu->AF.flags.N = 0;
         cpu->AF.flags.H = 1;
@@ -632,7 +632,7 @@ void handler_cb(Z80_State *cpu, uint8_t opcode)
     case 0x54: testBit(cpu, 2, cpu->getH); break;
     case 0x55: testBit(cpu, 2, cpu->getL); break;
     case 0x56: 
-        uint8_t val = read_byte(cpu->mmu, cpu->HL_pair);
+        val = read_byte(cpu->mmu, cpu->HL_pair);
         cpu->AF.flags.Z = ((val & (1 << 2)) == 0);
         cpu->AF.flags.N = 0;
         cpu->AF.flags.H = 1;
@@ -646,7 +646,7 @@ void handler_cb(Z80_State *cpu, uint8_t opcode)
     case 0x5C: testBit(cpu, 3, cpu->getH); break;
     case 0x5D: testBit(cpu, 3, cpu->getL); break;
     case 0x5E: 
-        uint8_t val = read_byte(cpu->mmu, cpu->HL_pair);
+        val = read_byte(cpu->mmu, cpu->HL_pair);
         cpu->AF.flags.Z = ((val & (1 << 3)) == 0);
         cpu->AF.flags.N = 0;
         cpu->AF.flags.H = 1;
@@ -660,7 +660,7 @@ void handler_cb(Z80_State *cpu, uint8_t opcode)
     case 0x64: testBit(cpu, 4, cpu->getH); break;
     case 0x65: testBit(cpu, 4, cpu->getL); break;
     case 0x66: 
-        uint8_t val = read_byte(cpu->mmu, cpu->HL_pair);
+        val = read_byte(cpu->mmu, cpu->HL_pair);
         cpu->AF.flags.Z = ((val & (1 << 4)) == 0);
         cpu->AF.flags.N = 0;
         cpu->AF.flags.H = 1;
@@ -674,7 +674,7 @@ void handler_cb(Z80_State *cpu, uint8_t opcode)
     case 0x6C: testBit(cpu, 5, cpu->getH); break;
     case 0x6D: testBit(cpu, 5, cpu->getL); break;
     case 0x6E: 
-        uint8_t val = read_byte(cpu->mmu, cpu->HL_pair);
+        val = read_byte(cpu->mmu, cpu->HL_pair);
         cpu->AF.flags.Z = ((val & (1 << 5)) == 0);
         cpu->AF.flags.N = 0;
         cpu->AF.flags.H = 1;
@@ -688,7 +688,7 @@ void handler_cb(Z80_State *cpu, uint8_t opcode)
     case 0x74: testBit(cpu, 6, cpu->getH); break;
     case 0x75: testBit(cpu, 6, cpu->getL); break;
     case 0x76: 
-        uint8_t val = read_byte(cpu->mmu, cpu->HL_pair);
+        val = read_byte(cpu->mmu, cpu->HL_pair);
         cpu->AF.flags.Z = ((val & (1 << 6)) == 0);
         cpu->AF.flags.N = 0;
         cpu->AF.flags.H = 1;
@@ -702,7 +702,7 @@ void handler_cb(Z80_State *cpu, uint8_t opcode)
     case 0x7C: testBit(cpu, 7, cpu->getH); break;
     case 0x7D: testBit(cpu, 7, cpu->getL); break;
     case 0x7E: 
-        uint8_t val = read_byte(cpu->mmu, cpu->HL_pair);
+        val = read_byte(cpu->mmu, cpu->HL_pair);
         cpu->AF.flags.Z = ((val & (1 << 7)) == 0);
         cpu->AF.flags.N = 0;
         cpu->AF.flags.H = 1;
