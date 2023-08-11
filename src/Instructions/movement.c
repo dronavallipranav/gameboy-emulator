@@ -506,6 +506,36 @@
         getReg = cpu->getA;
         break;
 
+        case 0x06:
+            loadImm(cpu, cpu->setB, read_byte(cpu->mmu, cpu->PC+1));
+            cpu->PC+=1; 
+            break;
+
+        case 0x0E: 
+            loadImm(cpu, cpu->setC, read_byte(cpu->mmu, cpu->PC+1));
+            cpu->PC+=1;
+            break;
+
+        case 0x16: 
+            loadImm(cpu, cpu->setD, read_byte(cpu->mmu, cpu->PC+1));
+            cpu->PC+=1;
+            break;
+
+        case 0x1E: 
+            loadImm(cpu, cpu->setE, read_byte(cpu->mmu, cpu->PC+1));
+            cpu->PC+=1;
+            break;
+
+        case 0x26: 
+            loadImm(cpu, cpu->setH, read_byte(cpu->mmu, cpu->PC+1));
+            cpu->PC += 1;
+            break;
+
+        case 0x2E: 
+            loadImm(cpu, cpu->setL, read_byte(cpu->mmu, cpu->PC+1));
+            cpu->PC += 1;
+            break;
+
         //JP
         case 0xC3:
          val = read_byte(cpu->mmu, cpu->PC+1);
