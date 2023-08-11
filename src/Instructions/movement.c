@@ -68,31 +68,31 @@
         switch (opcode) {
         //16 bit loads
         case 0x01:
-        addr = (read_byte(cpu->mmu, cpu->PC+2) << 8) | read_byte(cpu->mmu, cpu->PC+1);
+        addr = (read_byte(cpu->mmu, cpu->PC+1) << 8) | read_byte(cpu->mmu, cpu->PC);
         setReg16 = cpu->setBC;
         loadImm16(cpu,setReg16, addr);
         status = false;
         break;
         case 0x11:
-        addr = (read_byte(cpu->mmu, cpu->PC+2) << 8) | read_byte(cpu->mmu, cpu->PC+1);
+        addr = (read_byte(cpu->mmu, cpu->PC+1) << 8) | read_byte(cpu->mmu, cpu->PC);
         setReg16 = cpu->setDE;
         loadImm16(cpu,setReg16, addr);
         status = false;
-        cpu -> PC += 2;
+        cpu -> PC += 1;
         break;
         case 0x21:
-        addr = (read_byte(cpu->mmu, cpu->PC+2) << 8) | read_byte(cpu->mmu, cpu->PC+1);
+        addr = (read_byte(cpu->mmu, cpu->PC+1) << 8) | read_byte(cpu->mmu, cpu->PC);
         setReg16 = cpu->setHL;
         loadImm16(cpu,setReg16, addr);
         status = false;
-        cpu -> PC += 2;
+        cpu -> PC += 1;
         break;
         case 0x31:
-        addr = (read_byte(cpu->mmu, cpu->PC+2) << 8) | read_byte(cpu->mmu, cpu->PC+1);
+        addr = (read_byte(cpu->mmu, cpu->PC+1) << 8) | read_byte(cpu->mmu, cpu->PC);
         setReg16 = cpu->setSP;
         loadImm16(cpu,setReg16, addr);
         status = false;
-        cpu -> PC += 2;
+        cpu -> PC += 1;
         break;
         case 0xF9:
         getReg16 = cpu->getHL;
@@ -101,7 +101,7 @@
         case 0xF8:
         {
         uint8_t sp_low = cpu->SP & 0xFF;
-        int8_t n = read_byte(cpu->mmu, cpu->PC+1);
+        int8_t n = read_byte(cpu->mmu, cpu->PC);
         uint16_t res = cpu->SP + n;
         setReg16 = cpu -> setHL;
         loadImm16(cpu, setReg16, res);
@@ -115,11 +115,11 @@
         break;
 
         case 0x08:
-        addr = (read_byte(cpu->mmu, cpu->PC+2) << 8) | read_byte(cpu->mmu, cpu->PC+1);
+        addr = (read_byte(cpu->mmu, cpu->PC+1) << 8) | read_byte(cpu->mmu, cpu->PC);
         getReg16 = cpu -> getSP;
         loadIntoMem16(cpu, getReg16, addr);
         status = false;
-        cpu -> PC += 2;
+        cpu -> PC += 1;
         break;
         
 
@@ -194,8 +194,9 @@
         break;
         case 0xEA:
         getReg = cpu->getA;
-        addr = (uint16_t) (read_byte(cpu->mmu, cpu->PC+2) << 8) | read_byte(cpu->mmu, cpu->PC+1);
+        addr = (uint16_t) (read_byte(cpu->mmu, cpu->PC+1) << 8) | read_byte(cpu->mmu, cpu->PC);
         loadIntoMem(cpu, getReg, addr);
+        cpu->PC+=1;
         status = false;
         break;
         case 0x3A:
@@ -225,14 +226,14 @@
         break;
         case 0xE0:
         getReg = cpu->getA;
-        addr = read_byte(cpu->mmu, cpu->PC+1) + 0xFF00;
+        addr = read_byte(cpu->mmu, cpu->PC) + 0xFF00;
         loadIntoMem(cpu, getReg, addr);
         status = false;
         cpu -> PC += 1;
         break;
         case 0xF0:
         setReg = cpu->setA;
-        addr = read_byte(cpu->mmu, cpu->PC+1) + 0xFF00;
+        addr = read_byte(cpu->mmu, cpu->PC) + 0xFF00;
         loadFromMem(cpu, setReg, addr);
         status = false;
         cpu -> PC += 1;
@@ -285,11 +286,11 @@
         val = (read_byte(cpu->mmu, cpu->PC+2) << 8) | read_byte(cpu->mmu, cpu->PC+1);
         setReg = cpu->setA;
         loadImm(cpu, setReg, val);
-        cpu -> PC += 2;
+        cpu -> PC += 1;
         status = false;
         break;
         case 0x3E:
-         val = cpu->memory[cpu->PC+1];
+         val = cpu->memory[cpu->PC];
         setReg = cpu->setA;
         loadImm(cpu, setReg, val);
         cpu -> PC += 1;
@@ -547,7 +548,7 @@
       case 0xC2:
          status = false;
          if(cpu->AF.flags.Z == 1){
-            cpu->PC+=2;
+            cpu->PC+=1;
             break;
          }
          val = read_byte(cpu->mmu, cpu->PC+1);
@@ -558,7 +559,7 @@
       case 0xCA:
          status = false;
          if(cpu->AF.flags.Z == 0){
-            cpu->PC+=2;
+            cpu->PC+=1;
             break;
          }
          val = read_byte(cpu->mmu, cpu->PC+1);
@@ -569,7 +570,7 @@
       case 0xD2:
          status = false;
          if(cpu->AF.flags.C == 1){
-            cpu->PC+=2;
+            cpu->PC+=1;
             break;
          }
          val = read_byte(cpu->mmu, cpu->PC+1);
@@ -580,13 +581,18 @@
       case 0xDA:
          status = false;
          if(cpu->AF.flags.C == 0){
-            cpu->PC+=2;
+            cpu->PC+=1;
             break;
          }
          val = read_byte(cpu->mmu, cpu->PC+1);
          msb = read_byte(cpu->mmu, cpu->PC+2);
          jump(cpu, (msb << 8) | val);
          break;
+
+      case 0xE9:
+         cpu->PC = read_byte(cpu->mmu, cpu->HL_pair);
+         break;
+      
 
         default:
             fprintf(stderr, "Unhandled CB opcode: 0x%02X at PC: 0x%04X\n", opcode, cpu->PC);
