@@ -70,6 +70,13 @@ void rotate(Z80_State* cpu, bool left, bool circular, uint8_t(*getReg)(Z80_State
     setReg(cpu, val);  
 }
 
+void resetBit(Z80_State* cpu, uint8_t bitPosition, uint8_t(*getReg)(Z80_State*), void(*setReg)(Z80_State*, uint8_t)) {
+    uint8_t value = getReg(cpu);             
+    uint8_t mask = ~(1 << bitPosition);    
+    value &= mask;                         
+    setReg(cpu, value);                     
+}
+
 void shift(Z80_State *cpu, bool left, bool keep_msb, uint8_t (*getReg)(Z80_State*), void (*setReg)(Z80_State*, uint8_t)) {
     uint8_t val = getReg(cpu);
     uint8_t msb = val & 0x80; 
