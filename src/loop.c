@@ -221,6 +221,7 @@ void init_opcode_table()
     opcode_table[0xCA] = loadReg;
     opcode_table[0xD2] = loadReg;
     opcode_table[0xDA] = loadReg;
+    opcode_table[0xE9] = loadReg;
 }
 
 void handle_opcode(Z80_State *cpu, uint8_t opcode)
@@ -252,9 +253,9 @@ void execute_cycle(Z80_State *cpu)
     {
         // Fetch
         uint8_t opcode = cpu->mmu->cart_memory[cpu->PC];
-        // Handle and execute instr
-        handle_opcode(cpu, opcode);
         // inc PC
         cpu->PC++;
+        // Handle and execute instr
+        handle_opcode(cpu, opcode);
     }
 }
