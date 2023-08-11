@@ -283,7 +283,7 @@
         status = false;
         break;
         case 0xFA:
-        val = (read_byte(cpu->mmu, cpu->PC+2) << 8) | read_byte(cpu->mmu, cpu->PC+1);
+        val = (read_byte(cpu->mmu, cpu->PC+1) << 8) | read_byte(cpu->mmu, cpu->PC);
         setReg = cpu->setA;
         loadImm(cpu, setReg, val);
         cpu -> PC += 1;
@@ -508,39 +508,39 @@
         break;
 
         case 0x06:
-            loadImm(cpu, cpu->setB, read_byte(cpu->mmu, cpu->PC+1));
+            loadImm(cpu, cpu->setB, read_byte(cpu->mmu, cpu->PC));
             cpu->PC+=1; 
             break;
 
         case 0x0E: 
-            loadImm(cpu, cpu->setC, read_byte(cpu->mmu, cpu->PC+1));
+            loadImm(cpu, cpu->setC, read_byte(cpu->mmu, cpu->PC));
             cpu->PC+=1;
             break;
 
         case 0x16: 
-            loadImm(cpu, cpu->setD, read_byte(cpu->mmu, cpu->PC+1));
+            loadImm(cpu, cpu->setD, read_byte(cpu->mmu, cpu->PC));
             cpu->PC+=1;
             break;
 
         case 0x1E: 
-            loadImm(cpu, cpu->setE, read_byte(cpu->mmu, cpu->PC+1));
+            loadImm(cpu, cpu->setE, read_byte(cpu->mmu, cpu->PC));
             cpu->PC+=1;
             break;
 
         case 0x26: 
-            loadImm(cpu, cpu->setH, read_byte(cpu->mmu, cpu->PC+1));
+            loadImm(cpu, cpu->setH, read_byte(cpu->mmu, cpu->PC));
             cpu->PC += 1;
             break;
 
         case 0x2E: 
-            loadImm(cpu, cpu->setL, read_byte(cpu->mmu, cpu->PC+1));
+            loadImm(cpu, cpu->setL, read_byte(cpu->mmu, cpu->PC));
             cpu->PC += 1;
             break;
 
         //JP
         case 0xC3:
-         val = read_byte(cpu->mmu, cpu->PC+1);
-         msb = read_byte(cpu->mmu, cpu->PC+2);
+         val = read_byte(cpu->mmu, cpu->PC);
+         msb = read_byte(cpu->mmu, cpu->PC+1);
          jump(cpu, (msb << 8) | val);
          status = false;
          break;
@@ -551,8 +551,8 @@
             cpu->PC+=1;
             break;
          }
-         val = read_byte(cpu->mmu, cpu->PC+1);
-         msb = read_byte(cpu->mmu, cpu->PC+2);
+         val = read_byte(cpu->mmu, cpu->PC);
+         msb = read_byte(cpu->mmu, cpu->PC+1);
          jump(cpu, (msb << 8) | val);
          break;
 
@@ -562,8 +562,8 @@
             cpu->PC+=1;
             break;
          }
-         val = read_byte(cpu->mmu, cpu->PC+1);
-         msb = read_byte(cpu->mmu, cpu->PC+2);
+         val = read_byte(cpu->mmu, cpu->PC);
+         msb = read_byte(cpu->mmu, cpu->PC+1);
          jump(cpu, (msb << 8) | val);
          break;
 
@@ -573,8 +573,8 @@
             cpu->PC+=1;
             break;
          }
-         val = read_byte(cpu->mmu, cpu->PC+1);
-         msb = read_byte(cpu->mmu, cpu->PC+2);
+         val = read_byte(cpu->mmu, cpu->PC);
+         msb = read_byte(cpu->mmu, cpu->PC+1);
          jump(cpu, (msb << 8) | val);
          break;
 
@@ -584,15 +584,59 @@
             cpu->PC+=1;
             break;
          }
-         val = read_byte(cpu->mmu, cpu->PC+1);
-         msb = read_byte(cpu->mmu, cpu->PC+2);
+         val = read_byte(cpu->mmu, cpu->PC);
+         msb = read_byte(cpu->mmu, cpu->PC+1);
          jump(cpu, (msb << 8) | val);
          break;
 
       case 0xE9:
          cpu->PC = read_byte(cpu->mmu, cpu->HL_pair);
          break;
+
+      case 0x18:
+         val = read_byte(cpu->mmu, cpu ->PC);
+         cpu->PC = cpu->PC + val;
+         break;
       
+      case 0x20:
+         status = false;
+         if(cpu->AF.flags.Z == 1){
+            cpu->PC+=1;
+            break;
+         }
+         val = read_byte(cpu->mmu, cpu->PC);
+         cpu->PC = cpu->PC + val;
+         break;
+
+      case 0x28:
+         status = false;
+         if(cpu->AF.flags.Z == 0){
+            cpu->PC+=1;
+            break;
+         }
+         val = read_byte(cpu->mmu, cpu->PC);
+         cpu->PC = cpu->PC + val;
+         break;
+
+      case 0x30:
+         status = false;
+         if(cpu->AF.flags.C == 1){
+            cpu->PC+=1;
+            break;
+         }
+         val = read_byte(cpu->mmu, cpu->PC);
+         cpu->PC = cpu->PC + val;
+         break;
+
+      case 0x38:
+         status = false;
+         if(cpu->AF.flags.C == 0){
+            cpu->PC+=1;
+            break;
+         }
+         val = read_byte(cpu->mmu, cpu->PC);
+         cpu->PC = cpu->PC + val;
+         break;
 
         default:
             fprintf(stderr, "Unhandled CB opcode: 0x%02X at PC: 0x%04X\n", opcode, cpu->PC);

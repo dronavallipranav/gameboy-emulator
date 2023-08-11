@@ -222,6 +222,11 @@ void init_opcode_table()
     opcode_table[0xD2] = loadReg;
     opcode_table[0xDA] = loadReg;
     opcode_table[0xE9] = loadReg;
+    opcode_table[0x18] = loadReg;
+    opcode_table[0x20] = loadReg;
+    opcode_table[0x28] = loadReg;
+    opcode_table[0x30] = loadReg;
+    opcode_table[0x38] = loadReg;
 }
 
 void handle_opcode(Z80_State *cpu, uint8_t opcode)
