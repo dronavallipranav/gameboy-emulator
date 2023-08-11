@@ -149,7 +149,7 @@ void ALU(Z80_State *cpu, uint8_t opcode)
         add8(cpu, val, false);
         break;
     case 0xC6:
-        val = cpu->memory[cpu->PC + 1];
+        val = read_byte(cpu->mmu, cpu->PC);
         add8(cpu, val, false);
         cpu->PC += 1;
         break;
@@ -184,11 +184,11 @@ void ALU(Z80_State *cpu, uint8_t opcode)
         add8(cpu, val, true);
         break;
     case 0x8E:
-        val = cpu->memory[cpu->HL_pair];
+        val = read_byte(cpu->mmu, cpu->HL_pair);
         add8(cpu, val, true);
         break;
     case 0xCE:
-        val = cpu->memory[cpu->PC + 1];
+        val = read_byte(cpu->mmu, cpu->PC);
         add8(cpu, val, true);
         cpu->PC += 1;
         break;
@@ -216,12 +216,10 @@ void ALU(Z80_State *cpu, uint8_t opcode)
         sub8(cpu, cpu->HL.L, false);
         break;
     case 0x96:
-        addr = cpu->HL_pair;
-        sub8(cpu, cpu->memory[addr], false);
+        sub8(cpu, read_byte(cpu->mmu, cpu->HL_pair), false);
         break;
     case 0xD6:
-        addr = cpu->PC + 1;
-        sub8(cpu, cpu->memory[addr], false);
+        sub8(cpu, read_byte(cpu->mmu,cpu->PC), false);
         cpu->PC++;
         break;
 
@@ -248,8 +246,7 @@ void ALU(Z80_State *cpu, uint8_t opcode)
         sub8(cpu, cpu->HL.L, true);
         break;
     case 0x9E:
-        addr = cpu->HL_pair;
-        sub8(cpu, cpu->memory[addr], true);
+        sub8(cpu, read_byte(cpu->mmu, cpu->HL_pair), true);
         break;
 
     // Logical Group AND
@@ -282,13 +279,11 @@ void ALU(Z80_State *cpu, uint8_t opcode)
         and8(cpu, val);
         break;
     case 0xA6:
-        val = cpu->memory[cpu->HL_pair];
-        and8(cpu, val);
+        and8(cpu, read_byte(cpu->mmu, cpu->HL_pair));
         break;
     case 0xE6:
-        val = cpu->memory[cpu->PC + 1];
+        and8(cpu, read_byte(cpu->mmu, cpu->PC));
         cpu->PC += 1;
-        and8(cpu, val);
         break;
 
     // OR ops
@@ -321,13 +316,11 @@ void ALU(Z80_State *cpu, uint8_t opcode)
         or8(cpu, val);
         break;
     case 0xB6:
-        val = cpu->memory[cpu->HL_pair];
-        or8(cpu, val);
+        or8(cpu, read_byte(cpu->mmu, cpu->HL_pair));
         break;
     case 0xF6:
-        val = cpu->memory[cpu->PC + 1];
+        or8(cpu, read_byte(cpu->mmu, cpu->PC));
         cpu->PC += 1;
-        or8(cpu, val);
         break;
 
     // XOR ops
@@ -360,13 +353,11 @@ void ALU(Z80_State *cpu, uint8_t opcode)
         xor8(cpu, val);
         break;
     case 0xAE:
-        val = cpu->memory[cpu->HL_pair];
-        xor8(cpu, val);
+        xor8(cpu, read_byte(cpu->mmu, cpu->HL_pair));
         break;
     case 0xEE:
-        val = cpu->memory[cpu->PC + 1];
+        xor8(cpu, read_byte(cpu->mmu, cpu->PC));
         cpu->PC += 1;
-        xor8(cpu, val);
         break;
 
     // CP ops
@@ -399,13 +390,11 @@ void ALU(Z80_State *cpu, uint8_t opcode)
         cp8(cpu, val);
         break;
     case 0xBE:
-        val = cpu->memory[cpu->HL_pair];
-        cp8(cpu, val);
+        cp8(cpu, read_byte(cpu->mmu, cpu->HL_pair));
         break;
     case 0xFE:
-        val = cpu->memory[cpu->PC + 1];
+        cp8(cpu, read_byte(cpu->mmu, cpu->PC));
         cpu->PC += 1;
-        cp8(cpu, val);
         break;
 
     // INC ops
@@ -431,7 +420,7 @@ void ALU(Z80_State *cpu, uint8_t opcode)
         inc8(cpu, cpu->setL, cpu->HL.L);
         break;
     case 0x34:
-        val = cpu->memory[cpu->HL_pair];
+        val = read_byte(cpu->mmu, cpu->HL_pair);
         cpu->AF.flags.Z = val + 1 == 0;
         cpu->AF.flags.N = 0;
         cpu->AF.flags.H = val + 1 > 0x0F;
@@ -461,7 +450,7 @@ void ALU(Z80_State *cpu, uint8_t opcode)
         dec8(cpu, cpu->setL, cpu->HL.L);
         break;
     case 0x35:
-        val = cpu->memory[cpu->HL_pair];
+        val = read_byte(cpu->mmu, cpu->HL_pair);
         cpu->AF.flags.Z = (val - 1) == 0;
         cpu->AF.flags.N = 1;
         cpu->AF.flags.H = (val & 0x0F) == 0;
@@ -497,13 +486,14 @@ void ALU(Z80_State *cpu, uint8_t opcode)
         break;
 
     case 0xE8:
-        val = cpu->memory[cpu->PC + 1];
+        val = read_byte(cpu->mmu, cpu->PC);
         uint32_t result = (uint32_t)cpu->SP + (uint32_t)val;
         cpu->AF.flags.Z = 0;
         cpu->AF.flags.N = 0;
         cpu->AF.flags.H = ((cpu->SP & 0x0FFF) + (val & 0x0FFF)) > 0x0FFF;
         cpu->AF.flags.C = result > 0xFFFF;
         cpu->SP = (uint16_t)(result & 0xFFFF);
+        cpu->PC += 1;
         break;
 
     // INC
