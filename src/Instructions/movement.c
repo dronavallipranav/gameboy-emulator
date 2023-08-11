@@ -543,6 +543,50 @@
          jump(cpu, (msb << 8) | val);
          status = false;
          break;
+      
+      case 0xC2:
+         status = false;
+         if(cpu->AF.flags.Z == 1){
+            cpu->PC+=2;
+            break;
+         }
+         val = read_byte(cpu->mmu, cpu->PC+1);
+         msb = read_byte(cpu->mmu, cpu->PC+2);
+         jump(cpu, (msb << 8) | val);
+         break;
+
+      case 0xCA:
+         status = false;
+         if(cpu->AF.flags.Z == 0){
+            cpu->PC+=2;
+            break;
+         }
+         val = read_byte(cpu->mmu, cpu->PC+1);
+         msb = read_byte(cpu->mmu, cpu->PC+2);
+         jump(cpu, (msb << 8) | val);
+         break;
+
+      case 0xD2:
+         status = false;
+         if(cpu->AF.flags.C == 1){
+            cpu->PC+=2;
+            break;
+         }
+         val = read_byte(cpu->mmu, cpu->PC+1);
+         msb = read_byte(cpu->mmu, cpu->PC+2);
+         jump(cpu, (msb << 8) | val);
+         break;
+
+      case 0xDA:
+         status = false;
+         if(cpu->AF.flags.C == 0){
+            cpu->PC+=2;
+            break;
+         }
+         val = read_byte(cpu->mmu, cpu->PC+1);
+         msb = read_byte(cpu->mmu, cpu->PC+2);
+         jump(cpu, (msb << 8) | val);
+         break;
 
         default:
             fprintf(stderr, "Unhandled CB opcode: 0x%02X at PC: 0x%04X\n", opcode, cpu->PC);
