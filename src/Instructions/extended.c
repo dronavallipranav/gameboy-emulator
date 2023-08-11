@@ -31,6 +31,16 @@ void setBit(Z80_State* cpu, uint8_t bitPosition, uint8_t(*getReg)(Z80_State*), v
     setReg(cpu, value);                  
 }
 
+void testBit(Z80_State* cpu, uint8_t bitPosition, uint8_t(*getReg)(Z80_State*)) {
+    uint8_t value = getReg(cpu);
+    uint8_t mask = (1 << bitPosition);
+    uint8_t result = value & mask;
+
+    cpu->AF.flags.Z = (result == 0);
+    cpu->AF.flags.N = 0;             
+    cpu->AF.flags.H = 1;             
+}
+
 void handler_cb(Z80_State *cpu, uint8_t opcode)
 {
     uint8_t val;
@@ -586,6 +596,118 @@ void handler_cb(Z80_State *cpu, uint8_t opcode)
     case 0xFF: setBit(cpu, 7, cpu->getA, cpu->setA); break;
 
 
+    //TEST
+    case 0x40: testBit(cpu, 0, cpu->getB); break;
+    case 0x41: testBit(cpu, 0, cpu->getC); break;
+    case 0x42: testBit(cpu, 0, cpu->getD); break;
+    case 0x43: testBit(cpu, 0, cpu->getE); break;
+    case 0x44: testBit(cpu, 0, cpu->getH); break;
+    case 0x45: testBit(cpu, 0, cpu->getL); break;
+    case 0x46: 
+        uint8_t val = read_byte(cpu->mmu, cpu->HL_pair);
+        cpu->AF.flags.Z = ((val & (1 << 0)) == 0);
+        cpu->AF.flags.N = 0;
+        cpu->AF.flags.H = 1;
+        break;
+    case 0x47: testBit(cpu, 0, cpu->getA); break;
+
+    case 0x48: testBit(cpu, 1, cpu->getB); break;
+    case 0x49: testBit(cpu, 1, cpu->getC); break;
+    case 0x4A: testBit(cpu, 1, cpu->getD); break;
+    case 0x4B: testBit(cpu, 1, cpu->getE); break;
+    case 0x4C: testBit(cpu, 1, cpu->getH); break;
+    case 0x4D: testBit(cpu, 1, cpu->getL); break;
+    case 0x4E: 
+        uint8_t val = read_byte(cpu->mmu, cpu->HL_pair);
+        cpu->AF.flags.Z = ((val & (1 << 1)) == 0);
+        cpu->AF.flags.N = 0;
+        cpu->AF.flags.H = 1;
+        break;
+    case 0x4F: testBit(cpu, 1, cpu->getA); break;
+
+    case 0x50: testBit(cpu, 2, cpu->getB); break;
+    case 0x51: testBit(cpu, 2, cpu->getC); break;
+    case 0x52: testBit(cpu, 2, cpu->getD); break;
+    case 0x53: testBit(cpu, 2, cpu->getE); break;
+    case 0x54: testBit(cpu, 2, cpu->getH); break;
+    case 0x55: testBit(cpu, 2, cpu->getL); break;
+    case 0x56: 
+        uint8_t val = read_byte(cpu->mmu, cpu->HL_pair);
+        cpu->AF.flags.Z = ((val & (1 << 2)) == 0);
+        cpu->AF.flags.N = 0;
+        cpu->AF.flags.H = 1;
+        break;
+    case 0x57: testBit(cpu, 2, cpu->getA); break;
+
+    case 0x58: testBit(cpu, 3, cpu->getB); break;
+    case 0x59: testBit(cpu, 3, cpu->getC); break;
+    case 0x5A: testBit(cpu, 3, cpu->getD); break;
+    case 0x5B: testBit(cpu, 3, cpu->getE); break;
+    case 0x5C: testBit(cpu, 3, cpu->getH); break;
+    case 0x5D: testBit(cpu, 3, cpu->getL); break;
+    case 0x5E: 
+        uint8_t val = read_byte(cpu->mmu, cpu->HL_pair);
+        cpu->AF.flags.Z = ((val & (1 << 3)) == 0);
+        cpu->AF.flags.N = 0;
+        cpu->AF.flags.H = 1;
+        break;
+    case 0x5F: testBit(cpu, 3, cpu->getA); break;
+
+    case 0x60: testBit(cpu, 4, cpu->getB); break;
+    case 0x61: testBit(cpu, 4, cpu->getC); break;
+    case 0x62: testBit(cpu, 4, cpu->getD); break;
+    case 0x63: testBit(cpu, 4, cpu->getE); break;
+    case 0x64: testBit(cpu, 4, cpu->getH); break;
+    case 0x65: testBit(cpu, 4, cpu->getL); break;
+    case 0x66: 
+        uint8_t val = read_byte(cpu->mmu, cpu->HL_pair);
+        cpu->AF.flags.Z = ((val & (1 << 4)) == 0);
+        cpu->AF.flags.N = 0;
+        cpu->AF.flags.H = 1;
+        break;
+    case 0x67: testBit(cpu, 4, cpu->getA); break;
+
+    case 0x68: testBit(cpu, 5, cpu->getB); break;
+    case 0x69: testBit(cpu, 5, cpu->getC); break;
+    case 0x6A: testBit(cpu, 5, cpu->getD); break;
+    case 0x6B: testBit(cpu, 5, cpu->getE); break;
+    case 0x6C: testBit(cpu, 5, cpu->getH); break;
+    case 0x6D: testBit(cpu, 5, cpu->getL); break;
+    case 0x6E: 
+        uint8_t val = read_byte(cpu->mmu, cpu->HL_pair);
+        cpu->AF.flags.Z = ((val & (1 << 5)) == 0);
+        cpu->AF.flags.N = 0;
+        cpu->AF.flags.H = 1;
+        break;
+    case 0x6F: testBit(cpu, 5, cpu->getA); break;
+
+    case 0x70: testBit(cpu, 6, cpu->getB); break;
+    case 0x71: testBit(cpu, 6, cpu->getC); break;
+    case 0x72: testBit(cpu, 6, cpu->getD); break;
+    case 0x73: testBit(cpu, 6, cpu->getE); break;
+    case 0x74: testBit(cpu, 6, cpu->getH); break;
+    case 0x75: testBit(cpu, 6, cpu->getL); break;
+    case 0x76: 
+        uint8_t val = read_byte(cpu->mmu, cpu->HL_pair);
+        cpu->AF.flags.Z = ((val & (1 << 6)) == 0);
+        cpu->AF.flags.N = 0;
+        cpu->AF.flags.H = 1;
+        break;
+    case 0x77: testBit(cpu, 6, cpu->getA); break;
+
+    case 0x78: testBit(cpu, 7, cpu->getB); break;
+    case 0x79: testBit(cpu, 7, cpu->getC); break;
+    case 0x7A: testBit(cpu, 7, cpu->getD); break;
+    case 0x7B: testBit(cpu, 7, cpu->getE); break;
+    case 0x7C: testBit(cpu, 7, cpu->getH); break;
+    case 0x7D: testBit(cpu, 7, cpu->getL); break;
+    case 0x7E: 
+        uint8_t val = read_byte(cpu->mmu, cpu->HL_pair);
+        cpu->AF.flags.Z = ((val & (1 << 7)) == 0);
+        cpu->AF.flags.N = 0;
+        cpu->AF.flags.H = 1;
+        break;
+    case 0x7F: testBit(cpu, 7, cpu->getA); break;
 
 
     default:
