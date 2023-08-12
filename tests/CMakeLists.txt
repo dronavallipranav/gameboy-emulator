@@ -1,7 +1,7 @@
 
-include_directories(/opt/homebrew/Cellar/cunit/2.1-3/include)
+include_directories(/usr/local/Cellar/cunit/2.1-3/include)
 
-link_directories(/opt/homebrew/Cellar/cunit/2.1-3/lib)
+link_directories(/usr/local/Cellar/cunit/2.1-3/lib)
 
 
 include_directories(../src/Instructions)
