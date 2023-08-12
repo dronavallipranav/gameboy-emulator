@@ -6,43 +6,52 @@
 #include "test_movement.c"
 #include "test_extended.c"
 
-int main() {
+int main()
+{
     CU_pSuite suite = NULL;
-    
+
     if (CUE_SUCCESS != CU_initialize_registry())
         return CU_get_error();
 
     suite = CU_add_suite("z80_cpu_test_suite", NULL, NULL);
-    if (NULL == suite) {
+    if (NULL == suite)
+    {
         CU_cleanup_registry();
         return CU_get_error();
     }
 
-    if (add_arithmetic_tests(suite) != 0) {
+    if (add_arithmetic_tests(suite) != 0)
+    {
         CU_cleanup_registry();
         return CU_get_error();
     }
 
-    if (add_cartridge_tests(suite) != 0) {
+    if (add_cartridge_tests(suite) != 0)
+    {
         CU_cleanup_registry();
         return CU_get_error();
     }
 
-    if (add_loadReg_tests(suite) != 0) {
+    if (add_loadReg_tests(suite) != 0)
+    {
         CU_cleanup_registry();
         return CU_get_error();
     }
 
-     if (add_extended_tests(suite) != 0) {
+    if (add_extended_tests(suite) != 0)
+    {
         CU_cleanup_registry();
         return CU_get_error();
     }
 
     CU_automated_run_tests();
 
-     if (CU_get_number_of_failures() == 0) {
+    if (CU_get_number_of_failures() == 0)
+    {
         printf("All tests passed\n");
-    }else{
+    }
+    else
+    {
         printf("tests failed");
     }
 
