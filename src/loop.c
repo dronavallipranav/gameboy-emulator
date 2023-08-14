@@ -124,14 +124,14 @@ void init_opcode_table()
     opcode_table[0x1B] = ALU;
     opcode_table[0x2B] = ALU;
     opcode_table[0x3B] = ALU;
-    opcode_table[0x01] = loadReg; 
+    opcode_table[0x01] = loadReg;
     opcode_table[0x11] = loadReg;
     opcode_table[0x21] = loadReg;
     opcode_table[0x31] = loadReg;
     opcode_table[0xF9] = loadReg;
     opcode_table[0xF8] = loadReg;
     opcode_table[0x08] = loadReg;
-    opcode_table[0xF5] = loadReg; 
+    opcode_table[0xF5] = loadReg;
     opcode_table[0xC5] = loadReg;
     opcode_table[0xD5] = loadReg;
     opcode_table[0xE5] = loadReg;
@@ -227,11 +227,30 @@ void init_opcode_table()
     opcode_table[0x28] = loadReg;
     opcode_table[0x30] = loadReg;
     opcode_table[0x38] = loadReg;
+    opcode_table[0xC7] = loadReg;
+    opcode_table[0xCF] = loadReg;
+    opcode_table[0xD7] = loadReg;
+    opcode_table[0xDF] = loadReg;
+    opcode_table[0xE7] = loadReg;
+    opcode_table[0xEF] = loadReg;
+    opcode_table[0xF7] = loadReg;
+    opcode_table[0xFF] = loadReg;
+    opcode_table[0xCD] = loadReg;
+    opcode_table[0xC4] = loadReg;
+    opcode_table[0xCC] = loadReg;
+    opcode_table[0xD4] = loadReg;
+    opcode_table[0xDC] = loadReg;
+    opcode_table[0xC9] = loadReg;
+    opcode_table[0xC0] = loadReg;
+    opcode_table[0xC8] = loadReg;
+    opcode_table[0xD0] = loadReg;
+    opcode_table[0xD8] = loadReg;
+    opcode_table[0xD9] = loadReg;
 }
 
 void handle_opcode(Z80_State *cpu, uint8_t opcode)
 {
-    
+
     if (opcode == 0xCB)
     {
         uint8_t cb_opcode = cpu->mmu->cart_memory[++cpu->PC];
@@ -250,7 +269,6 @@ void handle_opcode(Z80_State *cpu, uint8_t opcode)
         }
     }
 }
-
 
 void execute_cycle(Z80_State *cpu)
 {

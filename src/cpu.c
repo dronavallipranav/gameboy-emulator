@@ -203,5 +203,5 @@ void initCPU(Z80_State *cpu)
     exit(1);
   }
   init_mmu(cpu->mmu);
-  load_memory(cpu->mmu, "/Users/pranavdronavalli/Downloads/gb-test-roms-master/cpu_instrs/individual/01-special.gb");
+  load_memory(cpu->mmu, "/Users/pranavdronavalli/Downloads/gb-test-roms-master/cpu_instrs/individual/03-op sp,hl.gb");
 }

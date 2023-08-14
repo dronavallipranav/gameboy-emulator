@@ -57,6 +57,40 @@ void jump(Z80_State *cpu, uint16_t addr)
 {
    cpu->PC = addr;
 }
+
+void RST(Z80_State *cpu, uint16_t imm)
+{
+   cpu->SP -= 2;
+   write_byte(cpu->mmu, cpu->SP, (uint8_t)(cpu->PC & 0x00FF));
+   write_byte(cpu->mmu, cpu->SP + 1, (uint8_t)((cpu->PC & 0xFF00) >> 8));
+
+   cpu->PC = 0x0000 + imm;
+}
+
+void call(Z80_State *cpu)
+{
+   uint16_t nn = (uint16_t)read_byte(cpu->mmu, cpu->PC) | ((uint16_t)read_byte(cpu->mmu, cpu->PC + 1) << 8);
+
+   cpu->PC += 2;
+
+   // Push next instr onto stack
+   cpu->SP -= 2;
+   write_byte(cpu->mmu, cpu->SP, (uint8_t)(cpu->PC & 0x00FF));
+   write_byte(cpu->mmu, cpu->SP + 1, (uint8_t)((cpu->PC & 0xFF00) >> 8));
+
+   cpu->PC = nn;
+}
+/*
+This function pops two bytes from stack and jumps to addr
+@param: cpu - cpu state
+*/
+void ret(Z80_State *cpu)
+{
+   uint16_t ret_address = read_byte(cpu->mmu, cpu->SP) | ((uint16_t)read_byte(cpu->mmu, cpu->SP + 1) << 8);
+   cpu->SP += 2;
+   cpu->PC = ret_address;
+}
+
 /*
 This function handles all 8-bit loads assuming we are using a little endian system
 @param: opcode - code to specify which load instruction
@@ -608,6 +642,7 @@ void loadReg(Z80_State *cpu, uint8_t opcode)
       cpu->PC = read_byte(cpu->mmu, cpu->HL_pair);
       break;
 
+   // JR
    case 0x18:
       val = read_byte(cpu->mmu, cpu->PC);
       cpu->PC = cpu->PC + val;
@@ -655,6 +690,126 @@ void loadReg(Z80_State *cpu, uint8_t opcode)
       }
       val = read_byte(cpu->mmu, cpu->PC);
       cpu->PC = cpu->PC + val;
+      break;
+
+      // RST
+   case 0xC7:
+      RST(cpu, 0x00);
+      break;
+
+   case 0xCF:
+      RST(cpu, 0x08);
+      break;
+
+   case 0xD7:
+      RST(cpu, 0x10);
+      break;
+
+   case 0xDF:
+      RST(cpu, 0x18);
+      break;
+
+   case 0xE7:
+      RST(cpu, 0x20);
+      break;
+
+   case 0xEF:
+      RST(cpu, 0x28);
+      break;
+
+   case 0xF7:
+      RST(cpu, 0x30);
+      break;
+
+   case 0xFF:
+      RST(cpu, 0x38);
+      break;
+
+   // CALL
+   case 0xCD:
+      call(cpu);
+      break;
+
+   case 0xC4:
+      if (cpu->AF.flags.Z == 1)
+      {
+         cpu->PC += 2;
+         break;
+      }
+      call(cpu);
+      break;
+
+   case 0xCC:
+      if (cpu->AF.flags.Z == 0)
+      {
+         cpu->PC += 2;
+         break;
+      }
+      call(cpu);
+      break;
+
+   case 0xD4:
+      if (cpu->AF.flags.C == 1)
+      {
+         cpu->PC += 2;
+         break;
+      }
+      call(cpu);
+      break;
+
+   case 0xDC:
+      if (cpu->AF.flags.C == 0)
+      {
+         cpu->PC += 2;
+         break;
+      }
+      call(cpu);
+      break;
+
+   // RET
+   case 0xC9:
+      ret(cpu);
+      break;
+
+   case 0xC0:
+      if (cpu->AF.flags.Z == 1)
+      {
+         cpu->PC += 2;
+         break;
+      }
+      ret(cpu);
+      break;
+
+   case 0xC8:
+      if (cpu->AF.flags.Z == 0)
+      {
+         cpu->PC += 2;
+         break;
+      }
+      ret(cpu);
+      break;
+
+   case 0xD0:
+      if (cpu->AF.flags.C == 1)
+      {
+         cpu->PC += 2;
+         break;
+      }
+      ret(cpu);
+      break;
+
+   case 0xD8:
+      if (cpu->AF.flags.C == 0)
+      {
+         cpu->PC += 2;
+         break;
+      }
+      ret(cpu);
+      break;
+
+   case 0xD9:
+      ret(cpu);
+      cpu->interrupt_status = true;
       break;
 
    default:
