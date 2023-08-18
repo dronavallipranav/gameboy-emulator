@@ -1,5 +1,5 @@
 #include <cpu.h>
-#include <arithmetic.h>
+#include "arithmetic.h"
 #include <stdbool.h>
 #include <stdio.h>
 

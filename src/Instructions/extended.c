@@ -1,7 +1,7 @@
-#include <extended.h>
+#include "extended.h"
 #include <stdint.h>
 #include <cpu.h>
-#include <bitmanip.h>
+#include "bitmanip.h"
 #include <stdlib.h>
 #include <stdio.h>
 

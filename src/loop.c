@@ -1,5 +1,5 @@
 #include <cpu.h>
-#include <bitmanip.h>
+#include "./Instructions/bitmanip.h"
 #include <stdio.h>
 #include <arithmetic.h>
 #include <movement.h>
