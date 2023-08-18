@@ -43,6 +43,17 @@ void load_memory(MMU *mmu, const char *filename)
     fclose(file);
 }
 
+void load_memory_tests(MMU *mmu)
+{
+    mmu->cart_memory = (uint8_t *)malloc(CART_SIZE);
+    if (mmu->cart_memory == NULL)
+    {
+        fprintf(stderr, "Failed to allocate memory for ROM\n");
+        exit(1);
+    }
+    memset(mmu->cart_memory, 0, CART_SIZE);
+}
+
 uint8_t read_byte(MMU *mmu, uint16_t addr)
 {
     if (addr >= CART_START && addr <= CART_END)
@@ -94,6 +105,7 @@ uint8_t read_byte(MMU *mmu, uint16_t addr)
 
 void write_byte(MMU *mmu, uint16_t addr, uint8_t value)
 {
+    printf("reached\n");
     if (addr >= CART_START && addr <= CART_END)
     {
         mmu->cart_memory[addr] = value;

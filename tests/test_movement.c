@@ -1,15 +1,14 @@
 #include <CUnit/CUnit.h>
 #include <cpu.h>
 #include <movement.h>
-
+#include <stdint.h>
 void test_loadReg()
 {
     Z80_State cpu;
     initCPU(&cpu);
-
+    load_memory_tests(cpu.mmu);
     cpu.setA(&cpu, 0xA0);
     cpu.setB(&cpu, 0xB0);
-
     // Test LOAD A, B (opcode 0x78)
     loadReg(&cpu, 0x78);
     CU_ASSERT_EQUAL(cpu.getA(&cpu), 0xB0);
@@ -20,18 +19,19 @@ void test_loadFromMem()
 {
     Z80_State cpu;
     initCPU(&cpu);
+    load_memory_tests(cpu.mmu);
     // Test LOAD C, (HL) (loadFromMem) (opcode 0x4E)
-    cpu.setHL(&cpu, 20);
-    write_byte(cpu.mmu, cpu.HL_pair, 15);
+    cpu.setHL(&cpu, (uint16_t)20);
+    write_byte(cpu.mmu, cpu.HL_pair, (uint8_t)15);
     loadReg(&cpu, 0x4E);
-    CU_ASSERT_EQUAL(cpu.getC(&cpu), 15);
+    CU_ASSERT_EQUAL(cpu.getC(&cpu), (uint8_t)15);
 }
 
 void test_loadIntoMem()
 {
     Z80_State cpu;
     initCPU(&cpu);
-    // Test Load (HL), C (loadIntoMem) (opcode 0x77)
+    load_memory_tests(cpu.mmu);
     cpu.setHL(&cpu, 10);
     write_byte(cpu.mmu, cpu.HL_pair, 5);
     cpu.AF.A = 7;
@@ -44,6 +44,7 @@ void test_push()
 {
     Z80_State cpu;
     initCPU(&cpu);
+    load_memory_tests(cpu.mmu);
     // Test PUSH (0xF5)
     cpu.SP = 0xFFFE;
     cpu.AF_pair = 0x3210;
@@ -57,6 +58,7 @@ void test_pop()
 {
     Z80_State cpu;
     initCPU(&cpu);
+    load_memory_tests(cpu.mmu);
     // Test POP (0xC1)
     cpu.SP = 0xFFEC;
     write_byte(cpu.mmu, cpu.SP + 1, 0x44);
@@ -70,6 +72,7 @@ void test_LDHL()
 {
     Z80_State cpu;
     initCPU(&cpu);
+    load_memory_tests(cpu.mmu);
     cpu.SP = 0xFFFC;
     // Test LDHL SP,n (opcode 0xF8)
     write_byte(cpu.mmu, cpu.PC, 0x2);

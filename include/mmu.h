@@ -45,7 +45,8 @@
 #define EMPTY_NO_IO_SIZE 0x34
 #define INTERNAL_HIGH_RAM_SIZE 0x7F
 
-typedef struct MMU {
+typedef struct MMU
+{
     Cartridge *cartridge;
     uint8_t *cart_memory;
     uint8_t video_ram[VIDEO_RAM_SIZE];
@@ -62,10 +63,12 @@ typedef struct MMU {
 
 void init_mmu(MMU *mmu);
 
-void load_memory(MMU* mmu, const char* filename);
+void load_memory(MMU *mmu, const char *filename);
+
+void load_memory_tests(MMU *mmu);
 
 uint8_t read_byte(MMU *mmu, uint16_t addr);
 
 void write_byte(MMU *mmu, uint16_t addr, uint8_t value);
 
-#endif 
+#endif
