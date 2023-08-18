@@ -1,7 +1,7 @@
 #include <cpu.h>
 #include "./Instructions/bitmanip.h"
 #include <stdio.h>
-#include <arithmetic.h>
+#include "./Instructions/arithmetic.h"
 #include <movement.h>
 #include <extended.h>
 
