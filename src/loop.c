@@ -2,8 +2,8 @@
 #include "./Instructions/bitmanip.h"
 #include <stdio.h>
 #include "./Instructions/arithmetic.h"
-#include <movement.h>
-#include <extended.h>
+#include "./Instructions/movement.h"
+#include "./Instructions/extended.h"
 
 typedef void (*opcode_handler)(Z80_State *cpu, uint8_t opcode);
 
