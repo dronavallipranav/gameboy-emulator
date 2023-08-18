@@ -5,6 +5,9 @@
         "arithmetic.h": "c",
         "stdbool.h": "c",
         "stdio.h": "c",
-        "cunit.h": "c"
-    }
+        "cunit.h": "c",
+        "movement.h": "c",
+        "extended.h": "c"
+    },
+    "cmake.configureOnOpen": false
 }
