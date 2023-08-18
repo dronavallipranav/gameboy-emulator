@@ -21,15 +21,15 @@ target_link_libraries(InstrTest z80_lib)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src/instructions)
 
 add_library(z80_lib
+    src/mmu.c
     src/cpu.c
     src/cartridge.c
-    src/loop.c
-    src/mmu.c
     ${PROJECT_SOURCE_DIR}/src/Instructions/extended.c
     ${PROJECT_SOURCE_DIR}/src/Instructions/bitmanip.c
     ${PROJECT_SOURCE_DIR}/src/Instructions/arithmetic.c
     ${PROJECT_SOURCE_DIR}/src/Instructions/movement.c
     ${PROJECT_SOURCE_DIR}/src/Instructions/extended.c
+    src/loop.c
 )
 
 
