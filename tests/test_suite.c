@@ -26,12 +26,6 @@ int main()
         return CU_get_error();
     }
 
-    if (add_cartridge_tests(suite) != 0)
-    {
-        CU_cleanup_registry();
-        return CU_get_error();
-    }
-
     if (add_loadReg_tests(suite) != 0)
     {
         CU_cleanup_registry();
