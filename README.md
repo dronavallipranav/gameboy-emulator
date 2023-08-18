@@ -10,6 +10,13 @@ To build and run the test suite, you will need the following dependencies:
 
 ## Getting Started
 
+To install dependencies on Linux:
+
+```bash
+$sudo apt-get update
+$sudo apt-get install -y cmake libsdl2-dev libglu1-mesa-dev freeglut3-dev mesa-common-dev libcunit1 libcunit1-doc libcunit1-dev
+```
+
 To build:
 
 ```bash
