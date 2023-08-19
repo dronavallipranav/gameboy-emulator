@@ -3,6 +3,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <mmu.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 // 64KB of memory in Z80
 #define MEMORY_SIZE 65536
@@ -132,5 +134,7 @@ typedef struct Z80_State
 } Z80_State;
 
 void initCPU(Z80_State *cpu);
+
+void dump_cpu(Z80_State *cpu, FILE *logfile);
 
 #endif

@@ -136,20 +136,20 @@ void initCPU(Z80_State *cpu)
   memset(cpu->memory, 0, sizeof(cpu->memory));
 
   // Initialize registers to zero
-  cpu->AF.A = 0;
-  cpu->AF.F = 0;
-  cpu->BC.B = 0;
-  cpu->BC.C = 0;
-  cpu->DE.D = 0;
-  cpu->DE.E = 0;
-  cpu->HL.H = 0;
-  cpu->HL.L = 0;
+  cpu->AF.A = 0x01;
+  cpu->AF.F = 0xB0;
+  cpu->BC.B = 0x00;
+  cpu->BC.C = 0x13;
+  cpu->DE.D = 0x00;
+  cpu->DE.E = 0xD8;
+  cpu->HL.H = 0x01;
+  cpu->HL.L = 0x4D;
   cpu->I = 0;
   cpu->R = 0;
   cpu->IX = 0;
   cpu->IY = 0;
   cpu->SP = 0xFFFE;
-  cpu->PC = 0;
+  cpu->PC = 0x0100;
   cpu->MBC = 1;
   cpu->interrupt = 0;
 
@@ -203,4 +203,15 @@ void initCPU(Z80_State *cpu)
     exit(1);
   }
   init_mmu(cpu->mmu);
+}
+
+void dump_cpu(Z80_State *cpu, FILE *logfile)
+{
+  uint8_t byte1 = cpu->mmu->cart_memory[cpu->PC];
+  uint8_t byte2 = cpu->mmu->cart_memory[cpu->PC + 1];
+  uint8_t byte3 = cpu->mmu->cart_memory[cpu->PC + 2];
+  uint8_t byte4 = cpu->mmu->cart_memory[cpu->PC + 3];
+
+  fprintf(logfile, "A:%02X F:%02X B:%02X C:%02X D:%02X E:%02X H:%02X L:%02X SP:%04X PC:%04X PCMEM:%02X,%02X,%02X,%02X\n",
+          cpu->AF.A, cpu->AF.F, cpu->BC.B, cpu->BC.C, cpu->DE.D, cpu->DE.E, cpu->HL.H, cpu->HL.L, cpu->SP, cpu->PC, byte1, byte2, byte3, byte4);
 }
