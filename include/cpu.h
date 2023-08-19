@@ -23,27 +23,28 @@ typedef struct
 
 typedef struct
 {
-  uint8_t B, C;
+  uint8_t C, B;
 } BC_Register;
 
 typedef struct
 {
-  uint8_t D, E;
+  uint8_t E, D;
 } DE_Register;
 
 typedef struct
 {
-  uint8_t H, L;
+  uint8_t L, H;
 } HL_Register;
 
 typedef struct
 {
-  uint8_t A;
   union
   {
     uint8_t F;
     Flags flags; // Individual flags
   };
+  uint8_t A;
+
 } AF_Register;
 
 typedef struct Z80_State
