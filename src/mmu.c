@@ -56,6 +56,10 @@ void load_memory_tests(MMU *mmu)
 
 uint8_t read_byte(MMU *mmu, uint16_t addr)
 {
+    if (addr == 0xFF44)
+    {
+        return 0x90;
+    }
     if (addr >= CART_START && addr <= CART_END)
     {
         return mmu->cart_memory[addr];

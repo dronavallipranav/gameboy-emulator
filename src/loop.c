@@ -270,7 +270,7 @@ void handle_opcode(Z80_State *cpu, uint8_t opcode)
     }
 }
 
-void execute_cycle(Z80_State *cpu)
+void execute_cycle(Z80_State *cpu, FILE *logfile)
 {
     while (!cpu->Halt)
     {
@@ -299,5 +299,6 @@ void execute_cycle(Z80_State *cpu)
             cpu->interrupt_status = false;
             cpu->DI_status = 0;
         }
+        dump_cpu(cpu, logfile);
     }
 }
