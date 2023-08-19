@@ -555,31 +555,38 @@ void loadReg(Z80_State *cpu, uint8_t opcode)
    case 0x06:
       loadImm(cpu, cpu->setB, read_byte(cpu->mmu, cpu->PC));
       cpu->PC += 1;
+      status = false;
       break;
 
    case 0x0E:
-      loadImm(cpu, cpu->setC, read_byte(cpu->mmu, cpu->PC));
+      val = read_byte(cpu->mmu, cpu->PC);
+      loadImm(cpu, cpu->setC, val);
       cpu->PC += 1;
+      status = false;
       break;
 
    case 0x16:
       loadImm(cpu, cpu->setD, read_byte(cpu->mmu, cpu->PC));
       cpu->PC += 1;
+      status = false;
       break;
 
    case 0x1E:
       loadImm(cpu, cpu->setE, read_byte(cpu->mmu, cpu->PC));
       cpu->PC += 1;
+      status = false;
       break;
 
    case 0x26:
       loadImm(cpu, cpu->setH, read_byte(cpu->mmu, cpu->PC));
       cpu->PC += 1;
+      status = false;
       break;
 
    case 0x2E:
       loadImm(cpu, cpu->setL, read_byte(cpu->mmu, cpu->PC));
       cpu->PC += 1;
+      status = false;
       break;
 
    // JP
