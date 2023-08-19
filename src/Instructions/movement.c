@@ -120,21 +120,21 @@ void loadReg(Z80_State *cpu, uint8_t opcode)
       setReg16 = cpu->setDE;
       loadImm16(cpu, setReg16, addr);
       status = false;
-      cpu->PC += 1;
+      cpu->PC += 2;
       break;
    case 0x21:
       addr = (read_byte(cpu->mmu, cpu->PC + 1) << 8) | read_byte(cpu->mmu, cpu->PC);
       setReg16 = cpu->setHL;
       loadImm16(cpu, setReg16, addr);
       status = false;
-      cpu->PC += 1;
+      cpu->PC += 2;
       break;
    case 0x31:
       addr = (read_byte(cpu->mmu, cpu->PC + 1) << 8) | read_byte(cpu->mmu, cpu->PC);
       setReg16 = cpu->setSP;
       loadImm16(cpu, setReg16, addr);
       status = false;
-      cpu->PC += 1;
+      cpu->PC += 2;
       break;
    case 0xF9:
       getReg16 = cpu->getHL;
@@ -161,7 +161,7 @@ void loadReg(Z80_State *cpu, uint8_t opcode)
       getReg16 = cpu->getSP;
       loadIntoMem16(cpu, getReg16, addr);
       status = false;
-      cpu->PC += 1;
+      cpu->PC += 2;
       break;
 
    // STACK ops
@@ -241,7 +241,7 @@ void loadReg(Z80_State *cpu, uint8_t opcode)
       getReg = cpu->getA;
       addr = (uint16_t)(read_byte(cpu->mmu, cpu->PC + 1) << 8) | read_byte(cpu->mmu, cpu->PC);
       loadIntoMem(cpu, getReg, addr);
-      cpu->PC += 1;
+      cpu->PC += 2;
       status = false;
       break;
    case 0x3A:
