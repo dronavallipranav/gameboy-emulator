@@ -105,7 +105,6 @@ uint8_t read_byte(MMU *mmu, uint16_t addr)
 
 void write_byte(MMU *mmu, uint16_t addr, uint8_t value)
 {
-    printf("reached\n");
     if (addr >= CART_START && addr <= CART_END)
     {
         mmu->cart_memory[addr] = value;
