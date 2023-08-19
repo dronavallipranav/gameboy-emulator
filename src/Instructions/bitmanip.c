@@ -143,11 +143,11 @@ void handle_manip(Z80_State *cpu, uint8_t opcode)
         break;
     // DI
     case 0xF3:
-        cpu->DI_status = true;
+        cpu->DI_status = 1;
         break;
     // EI
     case 0xFB:
-        cpu->EI_status = true;
+        cpu->EI_status = 1;
         break;
 
     case 0x07:

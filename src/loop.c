@@ -280,5 +280,24 @@ void execute_cycle(Z80_State *cpu)
         cpu->PC++;
         // Handle and execute instr
         handle_opcode(cpu, opcode);
+
+        if (cpu->EI_status == 1)
+        {
+            cpu->EI_status++;
+        }
+        else if (cpu->EI_status == 2)
+        {
+            cpu->interrupt_status = true;
+            cpu->EI_status = 0;
+        }
+        if (cpu->DI_status == 1)
+        {
+            cpu->DI_status++;
+        }
+        else if (cpu->DI_status == 2)
+        {
+            cpu->interrupt_status = false;
+            cpu->DI_status = 0;
+        }
     }
 }
