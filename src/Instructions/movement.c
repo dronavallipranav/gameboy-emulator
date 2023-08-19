@@ -594,7 +594,7 @@ void loadReg(Z80_State *cpu, uint8_t opcode)
       status = false;
       if (cpu->AF.flags.Z == 1)
       {
-         cpu->PC += 1;
+         cpu->PC += 2;
          break;
       }
       val = read_byte(cpu->mmu, cpu->PC);
@@ -606,7 +606,7 @@ void loadReg(Z80_State *cpu, uint8_t opcode)
       status = false;
       if (cpu->AF.flags.Z == 0)
       {
-         cpu->PC += 1;
+         cpu->PC += 2;
          break;
       }
       val = read_byte(cpu->mmu, cpu->PC);
@@ -618,7 +618,7 @@ void loadReg(Z80_State *cpu, uint8_t opcode)
       status = false;
       if (cpu->AF.flags.C == 1)
       {
-         cpu->PC += 1;
+         cpu->PC += 2;
          break;
       }
       val = read_byte(cpu->mmu, cpu->PC);
@@ -630,7 +630,7 @@ void loadReg(Z80_State *cpu, uint8_t opcode)
       status = false;
       if (cpu->AF.flags.C == 0)
       {
-         cpu->PC += 1;
+         cpu->PC += 2;
          break;
       }
       val = read_byte(cpu->mmu, cpu->PC);
