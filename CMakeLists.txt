@@ -24,6 +24,7 @@ add_library(z80_lib
     src/mmu.c
     src/cpu.c
     src/cartridge.c
+    src/ppu.c
     ${PROJECT_SOURCE_DIR}/src/Instructions/extended.c
     ${PROJECT_SOURCE_DIR}/src/Instructions/bitmanip.c
     ${PROJECT_SOURCE_DIR}/src/Instructions/arithmetic.c
