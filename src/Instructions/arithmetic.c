@@ -94,7 +94,7 @@ void inc8(Z80_State *cpu, void (*setReg)(Z80_State *, uint8_t), uint8_t val)
 {
     cpu->AF.flags.Z = val + 1 == 0;
     cpu->AF.flags.N = 0;
-    cpu->AF.flags.H = val + 1 > 0x0F;
+    cpu->AF.flags.H = (val & 0x0F) + 1 > 0x0F;
     setReg(cpu, val + 1);
 }
 
@@ -149,7 +149,7 @@ void ALU(Z80_State *cpu, uint8_t opcode)
         add8(cpu, val, false);
         break;
     case 0xC6:
-        val = read_byte(cpu->mmu, cpu->PC);
+        val = read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC);
         add8(cpu, val, false);
         cpu->PC += 1;
         break;
@@ -184,11 +184,11 @@ void ALU(Z80_State *cpu, uint8_t opcode)
         add8(cpu, val, true);
         break;
     case 0x8E:
-        val = read_byte(cpu->mmu, cpu->HL_pair);
+        val = read_byte(cpu->mmu->ppu, cpu->mmu, cpu->HL_pair);
         add8(cpu, val, true);
         break;
     case 0xCE:
-        val = read_byte(cpu->mmu, cpu->PC);
+        val = read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC);
         add8(cpu, val, true);
         cpu->PC += 1;
         break;
@@ -216,10 +216,10 @@ void ALU(Z80_State *cpu, uint8_t opcode)
         sub8(cpu, cpu->HL.L, false);
         break;
     case 0x96:
-        sub8(cpu, read_byte(cpu->mmu, cpu->HL_pair), false);
+        sub8(cpu, read_byte(cpu->mmu->ppu, cpu->mmu, cpu->HL_pair), false);
         break;
     case 0xD6:
-        sub8(cpu, read_byte(cpu->mmu,cpu->PC), false);
+        sub8(cpu, read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC), false);
         cpu->PC++;
         break;
 
@@ -246,7 +246,7 @@ void ALU(Z80_State *cpu, uint8_t opcode)
         sub8(cpu, cpu->HL.L, true);
         break;
     case 0x9E:
-        sub8(cpu, read_byte(cpu->mmu, cpu->HL_pair), true);
+        sub8(cpu, read_byte(cpu->mmu->ppu, cpu->mmu, cpu->HL_pair), true);
         break;
 
     // Logical Group AND
@@ -279,10 +279,10 @@ void ALU(Z80_State *cpu, uint8_t opcode)
         and8(cpu, val);
         break;
     case 0xA6:
-        and8(cpu, read_byte(cpu->mmu, cpu->HL_pair));
+        and8(cpu, read_byte(cpu->mmu->ppu, cpu->mmu, cpu->HL_pair));
         break;
     case 0xE6:
-        and8(cpu, read_byte(cpu->mmu, cpu->PC));
+        and8(cpu, read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC));
         cpu->PC += 1;
         break;
 
@@ -316,10 +316,10 @@ void ALU(Z80_State *cpu, uint8_t opcode)
         or8(cpu, val);
         break;
     case 0xB6:
-        or8(cpu, read_byte(cpu->mmu, cpu->HL_pair));
+        or8(cpu, read_byte(cpu->mmu->ppu, cpu->mmu, cpu->HL_pair));
         break;
     case 0xF6:
-        or8(cpu, read_byte(cpu->mmu, cpu->PC));
+        or8(cpu, read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC));
         cpu->PC += 1;
         break;
 
@@ -353,10 +353,10 @@ void ALU(Z80_State *cpu, uint8_t opcode)
         xor8(cpu, val);
         break;
     case 0xAE:
-        xor8(cpu, read_byte(cpu->mmu, cpu->HL_pair));
+        xor8(cpu, read_byte(cpu->mmu->ppu, cpu->mmu, cpu->HL_pair));
         break;
     case 0xEE:
-        xor8(cpu, read_byte(cpu->mmu, cpu->PC));
+        xor8(cpu, read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC));
         cpu->PC += 1;
         break;
 
@@ -390,10 +390,10 @@ void ALU(Z80_State *cpu, uint8_t opcode)
         cp8(cpu, val);
         break;
     case 0xBE:
-        cp8(cpu, read_byte(cpu->mmu, cpu->HL_pair));
+        cp8(cpu, read_byte(cpu->mmu->ppu, cpu->mmu, cpu->HL_pair));
         break;
     case 0xFE:
-        cp8(cpu, read_byte(cpu->mmu, cpu->PC));
+        cp8(cpu, read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC));
         cpu->PC += 1;
         break;
 
@@ -420,7 +420,7 @@ void ALU(Z80_State *cpu, uint8_t opcode)
         inc8(cpu, cpu->setL, cpu->HL.L);
         break;
     case 0x34:
-        val = read_byte(cpu->mmu, cpu->HL_pair);
+        val = read_byte(cpu->mmu->ppu, cpu->mmu, cpu->HL_pair);
         cpu->AF.flags.Z = val + 1 == 0;
         cpu->AF.flags.N = 0;
         cpu->AF.flags.H = val + 1 > 0x0F;
@@ -450,7 +450,7 @@ void ALU(Z80_State *cpu, uint8_t opcode)
         dec8(cpu, cpu->setL, cpu->HL.L);
         break;
     case 0x35:
-        val = read_byte(cpu->mmu, cpu->HL_pair);
+        val = read_byte(cpu->mmu->ppu, cpu->mmu, cpu->HL_pair);
         cpu->AF.flags.Z = (val - 1) == 0;
         cpu->AF.flags.N = 1;
         cpu->AF.flags.H = (val & 0x0F) == 0;
@@ -486,7 +486,7 @@ void ALU(Z80_State *cpu, uint8_t opcode)
         break;
 
     case 0xE8:
-        val = read_byte(cpu->mmu, cpu->PC);
+        val = read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC);
         uint32_t result = (uint32_t)cpu->SP + (uint32_t)val;
         cpu->AF.flags.Z = 0;
         cpu->AF.flags.N = 0;
@@ -547,7 +547,7 @@ void ALU(Z80_State *cpu, uint8_t opcode)
         break;
 
     default:
-            fprintf(stderr, "Unhandled CB opcode: 0x%02X at PC: 0x%04X\n", opcode, cpu->PC);
-            exit(1);
+        fprintf(stderr, "Unhandled CB opcode: 0x%02X at PC: 0x%04X\n", opcode, cpu->PC);
+        exit(1);
     }
 }

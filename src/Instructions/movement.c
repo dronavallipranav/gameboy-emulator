@@ -26,7 +26,7 @@ This function uses a function pointer to generalize loading a value from memory 
 */
 void loadFromMem(Z80_State *cpu, void (*setReg)(Z80_State *, uint8_t), uint16_t addr)
 {
-   uint8_t val = read_byte(cpu->mmu, addr);
+   uint8_t val = read_byte(cpu->mmu->ppu, cpu->mmu, addr);
    setReg(cpu, val);
 }
 /*
@@ -35,7 +35,7 @@ This function uses a function pointer to generalize loading a register into memo
 */
 void loadIntoMem(Z80_State *cpu, uint8_t (*getReg)(Z80_State *), uint16_t offset)
 {
-   write_byte(cpu->mmu, offset, getReg(cpu));
+   write_byte(cpu->mmu->ppu, cpu->mmu, offset, getReg(cpu));
 }
 /*
 This function uses a function pointer to generalize loading a register into memory
@@ -49,8 +49,8 @@ void loadIntoMem16(Z80_State *cpu, uint16_t (*getReg)(Z80_State *), uint16_t off
    uint8_t lsb = value & 0xFF;
    uint8_t msb = (value >> 8) & 0xFF;
 
-   write_byte(cpu->mmu, offset, lsb);
-   write_byte(cpu->mmu, offset + 1, msb);
+   write_byte(cpu->mmu->ppu, cpu->mmu, offset, lsb);
+   write_byte(cpu->mmu->ppu, cpu->mmu, offset + 1, msb);
 }
 
 void jump(Z80_State *cpu, uint16_t addr)
@@ -61,22 +61,22 @@ void jump(Z80_State *cpu, uint16_t addr)
 void RST(Z80_State *cpu, uint16_t imm)
 {
    cpu->SP -= 2;
-   write_byte(cpu->mmu, cpu->SP, (uint8_t)(cpu->PC & 0x00FF));
-   write_byte(cpu->mmu, cpu->SP + 1, (uint8_t)((cpu->PC & 0xFF00) >> 8));
+   write_byte(cpu->mmu->ppu, cpu->mmu, cpu->SP, (uint8_t)(cpu->PC & 0x00FF));
+   write_byte(cpu->mmu->ppu, cpu->mmu, cpu->SP + 1, (uint8_t)((cpu->PC & 0xFF00) >> 8));
 
    cpu->PC = 0x0000 + imm;
 }
 
 void call(Z80_State *cpu)
 {
-   uint16_t nn = (uint16_t)read_byte(cpu->mmu, cpu->PC) | ((uint16_t)read_byte(cpu->mmu, cpu->PC + 1) << 8);
+   uint16_t nn = (uint16_t)read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC) | ((uint16_t)read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC + 1) << 8);
 
    cpu->PC += 2;
 
    // Push next instr onto stack
    cpu->SP -= 2;
-   write_byte(cpu->mmu, cpu->SP, (uint8_t)(cpu->PC & 0x00FF));
-   write_byte(cpu->mmu, cpu->SP + 1, (uint8_t)((cpu->PC & 0xFF00) >> 8));
+   write_byte(cpu->mmu->ppu, cpu->mmu, cpu->SP, (uint8_t)(cpu->PC & 0x00FF));
+   write_byte(cpu->mmu->ppu, cpu->mmu, cpu->SP + 1, (uint8_t)((cpu->PC & 0xFF00) >> 8));
 
    cpu->PC = nn;
 }
@@ -86,7 +86,7 @@ This function pops two bytes from stack and jumps to addr
 */
 void ret(Z80_State *cpu)
 {
-   uint16_t ret_address = read_byte(cpu->mmu, cpu->SP) | ((uint16_t)read_byte(cpu->mmu, cpu->SP + 1) << 8);
+   uint16_t ret_address = read_byte(cpu->mmu->ppu, cpu->mmu, cpu->SP) | ((uint16_t)read_byte(cpu->mmu->ppu, cpu->mmu, cpu->SP + 1) << 8);
    cpu->SP += 2;
    cpu->PC = ret_address;
 }
@@ -100,6 +100,7 @@ void loadReg(Z80_State *cpu, uint8_t opcode)
    uint16_t addr;
    uint8_t val;
    uint8_t msb;
+   int8_t offset;
    uint8_t (*getReg)(Z80_State *);
    uint16_t (*getReg16)(Z80_State *);
    void (*setReg)(Z80_State *, uint8_t);
@@ -110,27 +111,27 @@ void loadReg(Z80_State *cpu, uint8_t opcode)
    {
    // 16 bit loads
    case 0x01:
-      addr = (read_byte(cpu->mmu, cpu->PC + 1) << 8) | read_byte(cpu->mmu, cpu->PC);
+      addr = (read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC + 1) << 8) | read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC);
       setReg16 = cpu->setBC;
       loadImm16(cpu, setReg16, addr);
       status = false;
       break;
    case 0x11:
-      addr = (read_byte(cpu->mmu, cpu->PC + 1) << 8) | read_byte(cpu->mmu, cpu->PC);
+      addr = (read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC + 1) << 8) | read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC);
       setReg16 = cpu->setDE;
       loadImm16(cpu, setReg16, addr);
       status = false;
       cpu->PC += 2;
       break;
    case 0x21:
-      addr = (read_byte(cpu->mmu, cpu->PC + 1) << 8) | read_byte(cpu->mmu, cpu->PC);
+      addr = (read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC + 1) << 8) | read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC);
       setReg16 = cpu->setHL;
       loadImm16(cpu, setReg16, addr);
       status = false;
       cpu->PC += 2;
       break;
    case 0x31:
-      addr = (read_byte(cpu->mmu, cpu->PC + 1) << 8) | read_byte(cpu->mmu, cpu->PC);
+      addr = (read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC + 1) << 8) | read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC);
       setReg16 = cpu->setSP;
       loadImm16(cpu, setReg16, addr);
       status = false;
@@ -143,7 +144,7 @@ void loadReg(Z80_State *cpu, uint8_t opcode)
    case 0xF8:
    {
       uint8_t sp_low = cpu->SP & 0xFF;
-      int8_t n = read_byte(cpu->mmu, cpu->PC);
+      int8_t n = read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC);
       uint16_t res = cpu->SP + n;
       setReg16 = cpu->setHL;
       loadImm16(cpu, setReg16, res);
@@ -157,7 +158,7 @@ void loadReg(Z80_State *cpu, uint8_t opcode)
    break;
 
    case 0x08:
-      addr = (read_byte(cpu->mmu, cpu->PC + 1) << 8) | read_byte(cpu->mmu, cpu->PC);
+      addr = (read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC + 1) << 8) | read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC);
       getReg16 = cpu->getSP;
       loadIntoMem16(cpu, getReg16, addr);
       status = false;
@@ -168,54 +169,54 @@ void loadReg(Z80_State *cpu, uint8_t opcode)
    case 0xF5:
       getReg16 = cpu->getAF;
       cpu->SP -= 2;
-      write_byte(cpu->mmu, cpu->SP, (uint8_t)(cpu->AF_pair & 0x00FF));
-      write_byte(cpu->mmu, cpu->SP + 1, (uint8_t)((cpu->AF_pair & 0xFF00) >> 8));
+      write_byte(cpu->mmu->ppu, cpu->mmu, cpu->SP, (uint8_t)(cpu->AF_pair & 0x00FF));
+      write_byte(cpu->mmu->ppu, cpu->mmu, cpu->SP + 1, (uint8_t)((cpu->AF_pair & 0xFF00) >> 8));
       status = false;
       break;
    case 0xC5:
       getReg16 = cpu->getBC;
       cpu->SP -= 2;
-      write_byte(cpu->mmu, cpu->SP, (uint8_t)(cpu->AF_pair & 0x00FF));
-      write_byte(cpu->mmu, cpu->SP + 1, (uint8_t)((cpu->AF_pair & 0xFF00) >> 8));
+      write_byte(cpu->mmu->ppu, cpu->mmu, cpu->SP, (uint8_t)(cpu->AF_pair & 0x00FF));
+      write_byte(cpu->mmu->ppu, cpu->mmu, cpu->SP + 1, (uint8_t)((cpu->AF_pair & 0xFF00) >> 8));
       status = false;
       break;
    case 0xD5:
       getReg16 = cpu->getDE;
       cpu->SP -= 2;
-      write_byte(cpu->mmu, cpu->SP, (uint8_t)(cpu->AF_pair & 0x00FF));
-      write_byte(cpu->mmu, cpu->SP + 1, (uint8_t)((cpu->AF_pair & 0xFF00) >> 8));
+      write_byte(cpu->mmu->ppu, cpu->mmu, cpu->SP, (uint8_t)(cpu->AF_pair & 0x00FF));
+      write_byte(cpu->mmu->ppu, cpu->mmu, cpu->SP + 1, (uint8_t)((cpu->AF_pair & 0xFF00) >> 8));
       status = false;
       break;
    case 0xE5:
       getReg16 = cpu->getHL;
       cpu->SP -= 2;
-      write_byte(cpu->mmu, cpu->SP, (uint8_t)(cpu->AF_pair & 0x00FF));
-      write_byte(cpu->mmu, cpu->SP + 1, (uint8_t)((cpu->AF_pair & 0xFF00) >> 8));
+      write_byte(cpu->mmu->ppu, cpu->mmu, cpu->SP, (uint8_t)(cpu->AF_pair & 0x00FF));
+      write_byte(cpu->mmu->ppu, cpu->mmu, cpu->SP + 1, (uint8_t)((cpu->AF_pair & 0xFF00) >> 8));
       status = false;
       break;
    case 0xF1:
-      addr = (read_byte(cpu->mmu, cpu->SP + 1) << 8) | read_byte(cpu->mmu, cpu->SP);
+      addr = (read_byte(cpu->mmu->ppu, cpu->mmu, cpu->SP + 1) << 8) | read_byte(cpu->mmu->ppu, cpu->mmu, cpu->SP);
       cpu->SP += 2;
       setReg16 = cpu->setAF;
       loadImm16(cpu, setReg16, addr);
       status = false;
       break;
    case 0xC1:
-      addr = (read_byte(cpu->mmu, cpu->SP + 1) << 8) | read_byte(cpu->mmu, cpu->SP);
+      addr = (read_byte(cpu->mmu->ppu, cpu->mmu, cpu->SP + 1) << 8) | read_byte(cpu->mmu->ppu, cpu->mmu, cpu->SP);
       cpu->SP += 2;
       setReg16 = cpu->setBC;
       loadImm16(cpu, setReg16, addr);
       status = false;
       break;
    case 0xD1:
-      addr = (read_byte(cpu->mmu, cpu->SP + 1) << 8) | read_byte(cpu->mmu, cpu->SP);
+      addr = (read_byte(cpu->mmu->ppu, cpu->mmu, cpu->SP + 1) << 8) | read_byte(cpu->mmu->ppu, cpu->mmu, cpu->SP);
       cpu->SP += 2;
       setReg16 = cpu->setDE;
       loadImm16(cpu, setReg16, addr);
       status = false;
       break;
    case 0xE1:
-      addr = (read_byte(cpu->mmu, cpu->SP + 1) << 8) | read_byte(cpu->mmu, cpu->SP);
+      addr = (read_byte(cpu->mmu->ppu, cpu->mmu, cpu->SP + 1) << 8) | read_byte(cpu->mmu->ppu, cpu->mmu, cpu->SP);
       cpu->SP += 2;
       setReg16 = cpu->setHL;
       loadImm16(cpu, setReg16, addr);
@@ -239,7 +240,7 @@ void loadReg(Z80_State *cpu, uint8_t opcode)
       break;
    case 0xEA:
       getReg = cpu->getA;
-      addr = (uint16_t)(read_byte(cpu->mmu, cpu->PC + 1) << 8) | read_byte(cpu->mmu, cpu->PC);
+      addr = (uint16_t)(read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC + 1) << 8) | read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC);
       loadIntoMem(cpu, getReg, addr);
       cpu->PC += 2;
       status = false;
@@ -271,14 +272,14 @@ void loadReg(Z80_State *cpu, uint8_t opcode)
       break;
    case 0xE0:
       getReg = cpu->getA;
-      addr = read_byte(cpu->mmu, cpu->PC) + 0xFF00;
+      addr = read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC) + 0xFF00;
       loadIntoMem(cpu, getReg, addr);
       status = false;
       cpu->PC += 1;
       break;
    case 0xF0:
       setReg = cpu->setA;
-      addr = read_byte(cpu->mmu, cpu->PC) + 0xFF00;
+      addr = read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC) + 0xFF00;
       loadFromMem(cpu, setReg, addr);
       status = false;
       cpu->PC += 1;
@@ -328,7 +329,7 @@ void loadReg(Z80_State *cpu, uint8_t opcode)
       status = false;
       break;
    case 0xFA:
-      val = (read_byte(cpu->mmu, cpu->PC + 1) << 8) | read_byte(cpu->mmu, cpu->PC);
+      val = (read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC + 1) << 8) | read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC);
       setReg = cpu->setA;
       loadImm(cpu, setReg, val);
       cpu->PC += 1;
@@ -553,150 +554,167 @@ void loadReg(Z80_State *cpu, uint8_t opcode)
       break;
 
    case 0x06:
-      loadImm(cpu, cpu->setB, read_byte(cpu->mmu, cpu->PC));
+      loadImm(cpu, cpu->setB, read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC));
       cpu->PC += 1;
       status = false;
       break;
 
    case 0x0E:
-      val = read_byte(cpu->mmu, cpu->PC);
+      val = read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC);
       loadImm(cpu, cpu->setC, val);
       cpu->PC += 1;
       status = false;
       break;
 
    case 0x16:
-      loadImm(cpu, cpu->setD, read_byte(cpu->mmu, cpu->PC));
+      loadImm(cpu, cpu->setD, read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC));
       cpu->PC += 1;
       status = false;
       break;
 
    case 0x1E:
-      loadImm(cpu, cpu->setE, read_byte(cpu->mmu, cpu->PC));
+      loadImm(cpu, cpu->setE, read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC));
       cpu->PC += 1;
       status = false;
       break;
 
    case 0x26:
-      loadImm(cpu, cpu->setH, read_byte(cpu->mmu, cpu->PC));
+      loadImm(cpu, cpu->setH, read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC));
       cpu->PC += 1;
       status = false;
       break;
 
    case 0x2E:
-      loadImm(cpu, cpu->setL, read_byte(cpu->mmu, cpu->PC));
+      loadImm(cpu, cpu->setL, read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC));
       cpu->PC += 1;
       status = false;
       break;
 
    // JP
    case 0xC3:
-      val = read_byte(cpu->mmu, cpu->PC);
-      msb = read_byte(cpu->mmu, cpu->PC + 1);
+      val = read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC);
+      msb = read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC + 1);
       jump(cpu, (msb << 8) | val);
       status = false;
       break;
 
    case 0xC2:
       status = false;
-      if (cpu->AF.flags.Z == 1)
+      if (cpu->AF.flags.Z == 0)
+      {
+         val = read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC);
+         msb = read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC + 1);
+         jump(cpu, (msb << 8) | val);
+      }
+      else
       {
          cpu->PC += 2;
-         break;
       }
-      val = read_byte(cpu->mmu, cpu->PC);
-      msb = read_byte(cpu->mmu, cpu->PC + 1);
-      jump(cpu, (msb << 8) | val);
       break;
 
    case 0xCA:
       status = false;
-      if (cpu->AF.flags.Z == 0)
+      if (cpu->AF.flags.Z == 1)
+      {
+         val = read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC);
+         msb = read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC + 1);
+         jump(cpu, (msb << 8) | val);
+      }
+      else
       {
          cpu->PC += 2;
-         break;
       }
-      val = read_byte(cpu->mmu, cpu->PC);
-      msb = read_byte(cpu->mmu, cpu->PC + 1);
-      jump(cpu, (msb << 8) | val);
       break;
 
    case 0xD2:
       status = false;
-      if (cpu->AF.flags.C == 1)
+      if (cpu->AF.flags.C == 0)
+      {
+         val = read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC);
+         msb = read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC + 1);
+         jump(cpu, (msb << 8) | val);
+      }
+      else
       {
          cpu->PC += 2;
-         break;
       }
-      val = read_byte(cpu->mmu, cpu->PC);
-      msb = read_byte(cpu->mmu, cpu->PC + 1);
-      jump(cpu, (msb << 8) | val);
       break;
 
    case 0xDA:
       status = false;
-      if (cpu->AF.flags.C == 0)
+      if (cpu->AF.flags.C == 1)
+      {
+         val = read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC);
+         msb = read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC + 1);
+         jump(cpu, (msb << 8) | val);
+      }
+      else
       {
          cpu->PC += 2;
-         break;
       }
-      val = read_byte(cpu->mmu, cpu->PC);
-      msb = read_byte(cpu->mmu, cpu->PC + 1);
-      jump(cpu, (msb << 8) | val);
       break;
 
    case 0xE9:
-      cpu->PC = read_byte(cpu->mmu, cpu->HL_pair);
+      cpu->PC = read_byte(cpu->mmu->ppu, cpu->mmu, cpu->HL_pair);
       break;
 
    // JR
    case 0x18:
-      val = read_byte(cpu->mmu, cpu->PC);
-      cpu->PC = cpu->PC + val;
+      offset = read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC);
+      cpu->PC = cpu->PC + offset;
       break;
 
    case 0x20:
       status = false;
-      if (cpu->AF.flags.Z == 1)
+      if (cpu->AF.flags.Z == 0)
+      {
+         offset = read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC);
+         printf("%d\n", offset);
+         cpu->PC = cpu->PC + offset;
+      }
+      else
       {
          cpu->PC += 1;
-         break;
       }
-      val = read_byte(cpu->mmu, cpu->PC);
-      cpu->PC = cpu->PC + val;
       break;
 
    case 0x28:
       status = false;
-      if (cpu->AF.flags.Z == 0)
+      if (cpu->AF.flags.Z == 1)
+      {
+         offset = read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC);
+         cpu->PC = cpu->PC + offset;
+      }
+      else
       {
          cpu->PC += 1;
-         break;
       }
-      val = read_byte(cpu->mmu, cpu->PC);
-      cpu->PC = cpu->PC + val;
       break;
 
    case 0x30:
       status = false;
-      if (cpu->AF.flags.C == 1)
+      if (cpu->AF.flags.C == 0)
+      {
+         offset = read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC);
+         cpu->PC = cpu->PC + offset;
+      }
+      else
       {
          cpu->PC += 1;
-         break;
       }
-      val = read_byte(cpu->mmu, cpu->PC);
-      cpu->PC = cpu->PC + val;
       break;
 
    case 0x38:
       status = false;
-      if (cpu->AF.flags.C == 0)
+      if (cpu->AF.flags.C == 1)
+      {
+         offset = read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC);
+         cpu->PC = cpu->PC + offset;
+      }
+      else
       {
          cpu->PC += 1;
-         break;
       }
-      val = read_byte(cpu->mmu, cpu->PC);
-      cpu->PC = cpu->PC + val;
       break;
 
       // RST
@@ -738,39 +756,47 @@ void loadReg(Z80_State *cpu, uint8_t opcode)
       break;
 
    case 0xC4:
-      if (cpu->AF.flags.Z == 1)
+      if (cpu->AF.flags.Z == 0)
+      {
+         call(cpu);
+      }
+      else
       {
          cpu->PC += 2;
-         break;
       }
-      call(cpu);
       break;
 
    case 0xCC:
-      if (cpu->AF.flags.Z == 0)
+      if (cpu->AF.flags.Z == 1)
+      {
+         call(cpu);
+      }
+      else
       {
          cpu->PC += 2;
-         break;
       }
-      call(cpu);
       break;
 
    case 0xD4:
-      if (cpu->AF.flags.C == 1)
+      if (cpu->AF.flags.C == 0)
+      {
+         call(cpu);
+      }
+      else
       {
          cpu->PC += 2;
-         break;
       }
-      call(cpu);
       break;
 
    case 0xDC:
-      if (cpu->AF.flags.C == 0)
+      if (cpu->AF.flags.C == 1)
+      {
+         call(cpu);
+      }
+      else
       {
          cpu->PC += 2;
-         break;
       }
-      call(cpu);
       break;
 
    // RET
@@ -779,39 +805,47 @@ void loadReg(Z80_State *cpu, uint8_t opcode)
       break;
 
    case 0xC0:
-      if (cpu->AF.flags.Z == 1)
+      if (cpu->AF.flags.Z == 0)
+      {
+         ret(cpu);
+      }
+      else
       {
          cpu->PC += 2;
-         break;
       }
-      ret(cpu);
       break;
 
    case 0xC8:
-      if (cpu->AF.flags.Z == 0)
+      if (cpu->AF.flags.Z == 1)
+      {
+         ret(cpu);
+      }
+      else
       {
          cpu->PC += 2;
-         break;
       }
-      ret(cpu);
       break;
 
    case 0xD0:
-      if (cpu->AF.flags.C == 1)
+      if (cpu->AF.flags.C == 0)
+      {
+         ret(cpu);
+      }
+      else
       {
          cpu->PC += 2;
-         break;
       }
-      ret(cpu);
       break;
 
    case 0xD8:
-      if (cpu->AF.flags.C == 0)
+      if (cpu->AF.flags.C == 1)
+      {
+         ret(cpu);
+      }
+      else
       {
          cpu->PC += 2;
-         break;
       }
-      ret(cpu);
       break;
 
    case 0xD9:

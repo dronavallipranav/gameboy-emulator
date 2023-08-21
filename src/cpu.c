@@ -149,19 +149,9 @@ void initCPU(Z80_State *cpu)
   cpu->IX = 0;
   cpu->IY = 0;
   cpu->SP = 0xFFFE;
-  cpu->PC = 0x0100;
+  cpu->PC = 0x00FF;
   cpu->MBC = 1;
   cpu->interrupt = 0;
-
-  // Initialize flags to zero
-  cpu->AF.flags.S = 0;
-  cpu->AF.flags.Z = 0;
-  cpu->AF.flags.fifth = 0;
-  cpu->AF.flags.H = 0;
-  cpu->AF.flags.third = 0;
-  cpu->AF.flags.PV = 0;
-  cpu->AF.flags.N = 0;
-  cpu->AF.flags.C = 0;
 
   cpu->getA = getA;
   cpu->setA = setA;
@@ -207,10 +197,10 @@ void initCPU(Z80_State *cpu)
 
 void dump_cpu(Z80_State *cpu, FILE *logfile)
 {
-  uint8_t byte1 = cpu->mmu->cart_memory[cpu->PC];
-  uint8_t byte2 = cpu->mmu->cart_memory[cpu->PC + 1];
-  uint8_t byte3 = cpu->mmu->cart_memory[cpu->PC + 2];
-  uint8_t byte4 = cpu->mmu->cart_memory[cpu->PC + 3];
+  uint8_t byte1 = read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC);
+  uint8_t byte2 = read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC + 1);
+  uint8_t byte3 = read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC + 2);
+  uint8_t byte4 = read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC + 3);
 
   fprintf(logfile, "A:%02X F:%02X B:%02X C:%02X D:%02X E:%02X H:%02X L:%02X SP:%04X PC:%04X PCMEM:%02X,%02X,%02X,%02X\n",
           cpu->AF.A, cpu->AF.F, cpu->BC.B, cpu->BC.C, cpu->DE.D, cpu->DE.E, cpu->HL.H, cpu->HL.L, cpu->SP, cpu->PC, byte1, byte2, byte3, byte4);

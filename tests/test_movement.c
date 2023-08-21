@@ -22,7 +22,7 @@ void test_loadFromMem()
     load_memory_tests(cpu.mmu);
     // Test LOAD C, (HL) (loadFromMem) (opcode 0x4E)
     cpu.setHL(&cpu, (uint16_t)20);
-    write_byte(cpu.mmu, cpu.HL_pair, (uint8_t)15);
+    write_byte(cpu.mmu->ppu, cpu.mmu, cpu.HL_pair, (uint8_t)15);
     loadReg(&cpu, 0x4E);
     CU_ASSERT_EQUAL(cpu.getC(&cpu), (uint8_t)15);
 }
@@ -33,11 +33,11 @@ void test_loadIntoMem()
     initCPU(&cpu);
     load_memory_tests(cpu.mmu);
     cpu.setHL(&cpu, 10);
-    write_byte(cpu.mmu, cpu.HL_pair, 5);
+    write_byte(cpu.mmu->ppu, cpu.mmu, cpu.HL_pair, 5);
     cpu.AF.A = 7;
-    CU_ASSERT_EQUAL(read_byte(cpu.mmu, cpu.HL_pair), 5);
+    CU_ASSERT_EQUAL(read_byte(cpu.mmu->ppu, cpu.mmu, cpu.HL_pair), 5);
     loadReg(&cpu, 0x77);
-    CU_ASSERT_EQUAL(read_byte(cpu.mmu, cpu.HL_pair), 7);
+    CU_ASSERT_EQUAL(read_byte(cpu.mmu->ppu, cpu.mmu, cpu.HL_pair), 7);
 }
 
 void test_push()
@@ -49,7 +49,7 @@ void test_push()
     cpu.SP = 0xFFFE;
     cpu.AF_pair = 0x3210;
     loadReg(&cpu, 0xF5);
-    uint16_t value = (read_byte(cpu.mmu, cpu.SP + 1) << 8) | read_byte(cpu.mmu, cpu.SP);
+    uint16_t value = (read_byte(cpu.mmu->ppu, cpu.mmu, cpu.SP + 1) << 8) | read_byte(cpu.mmu->ppu, cpu.mmu, cpu.SP);
     CU_ASSERT_EQUAL(value, 0x3210);
     CU_ASSERT_EQUAL(cpu.SP, 0xFFFC);
 }
@@ -61,8 +61,8 @@ void test_pop()
     load_memory_tests(cpu.mmu);
     // Test POP (0xC1)
     cpu.SP = 0xFFEC;
-    write_byte(cpu.mmu, cpu.SP + 1, 0x44);
-    write_byte(cpu.mmu, cpu.SP, 0x78);
+    write_byte(cpu.mmu->ppu, cpu.mmu, cpu.SP + 1, 0x44);
+    write_byte(cpu.mmu->ppu, cpu.mmu, cpu.SP, 0x78);
     cpu.BC_pair = 0x3333;
     loadReg(&cpu, 0xC1);
     CU_ASSERT_EQUAL(cpu.BC_pair, 0x4478);
@@ -75,7 +75,7 @@ void test_LDHL()
     load_memory_tests(cpu.mmu);
     cpu.SP = 0xFFFC;
     // Test LDHL SP,n (opcode 0xF8)
-    write_byte(cpu.mmu, cpu.PC, 0x2);
+    write_byte(cpu.mmu->ppu, cpu.mmu, cpu.PC, 0x2);
     cpu.AF.flags.C = 1;
     cpu.AF.flags.H = 1;
     cpu.AF.flags.Z = 1;

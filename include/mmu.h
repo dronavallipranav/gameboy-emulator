@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include "../include/cartridge.h"
+#include <ppu.h>
 
 #define CART_START 0x0000
 #define CART_END 0x7FFF
@@ -47,6 +48,7 @@
 
 typedef struct MMU
 {
+    ppu *ppu;
     Cartridge *cartridge;
     uint8_t *cart_memory;
     uint8_t video_ram[VIDEO_RAM_SIZE];
@@ -67,8 +69,8 @@ void load_memory(MMU *mmu, const char *filename);
 
 void load_memory_tests(MMU *mmu);
 
-uint8_t read_byte(MMU *mmu, uint16_t addr);
+uint8_t read_byte(ppu *ppu, MMU *mmu, uint16_t addr);
 
-void write_byte(MMU *mmu, uint16_t addr, uint8_t value);
+void write_byte(ppu *ppu, MMU *mmu, uint16_t addr, uint8_t value);
 
 #endif

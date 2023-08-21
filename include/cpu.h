@@ -11,14 +11,14 @@
 
 typedef struct
 {
-  uint8_t S : 1;     // Sign
-  uint8_t Z : 1;     // Zero
-  uint8_t fifth : 1; // unused
-  uint8_t H : 1;     // Half Carry
-  uint8_t third : 1; // unused
-  uint8_t PV : 1;    // Parity/Overflow
-  uint8_t N : 1;     // Add/Subtract
   uint8_t C : 1;     // Carry
+  uint8_t N : 1;     // Add/Subtract
+  uint8_t PV : 1;    // Parity/Overflow
+  uint8_t third : 1; // unused
+  uint8_t H : 1;     // Half  Carry
+  uint8_t fifth : 1; // unused
+  uint8_t Z : 1;     // Zero
+  uint8_t S : 1;     // Sign
 } Flags;
 
 typedef struct

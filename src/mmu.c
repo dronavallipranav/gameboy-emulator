@@ -54,7 +54,7 @@ void load_memory_tests(MMU *mmu)
     memset(mmu->cart_memory, 0, CART_SIZE);
 }
 
-uint8_t read_byte(MMU *mmu, uint16_t addr)
+uint8_t read_byte(ppu *ppu, MMU *mmu, uint16_t addr)
 {
     if (addr == 0xFF44)
     {
@@ -66,7 +66,7 @@ uint8_t read_byte(MMU *mmu, uint16_t addr)
     }
     else if (addr >= VIDEO_RAM_START && addr <= VIDEO_RAM_END)
     {
-        return mmu->video_ram[addr - VIDEO_RAM_START];
+        return ppu_vram_read(ppu, addr);
     }
     else if (addr >= SWITCH_RAM_START && addr <= SWITCH_RAM_END)
     {
@@ -82,7 +82,7 @@ uint8_t read_byte(MMU *mmu, uint16_t addr)
     }
     else if (addr >= OAM_START && addr <= OAM_END)
     {
-        return mmu->oam[addr - OAM_START];
+        return ppu_read_oam(ppu, addr);
     }
     else if (addr >= EMPTY_START && addr <= EMPTY_END)
     {
@@ -107,7 +107,7 @@ uint8_t read_byte(MMU *mmu, uint16_t addr)
     return 0xFF;
 }
 
-void write_byte(MMU *mmu, uint16_t addr, uint8_t value)
+void write_byte(ppu *ppu, MMU *mmu, uint16_t addr, uint8_t value)
 {
     if (addr >= CART_START && addr <= CART_END)
     {
@@ -115,7 +115,7 @@ void write_byte(MMU *mmu, uint16_t addr, uint8_t value)
     }
     else if (addr >= VIDEO_RAM_START && addr <= VIDEO_RAM_END)
     {
-        mmu->video_ram[addr - VIDEO_RAM_START] = value;
+        ppu_vram_write(ppu, addr, value);
     }
     else if (addr >= SWITCH_RAM_START && addr <= SWITCH_RAM_END)
     {
@@ -131,7 +131,7 @@ void write_byte(MMU *mmu, uint16_t addr, uint8_t value)
     }
     else if (addr >= OAM_START && addr <= OAM_END)
     {
-        mmu->oam[addr - OAM_START] = value;
+        ppu_write_oam(ppu, addr, value);
     }
     else if (addr >= IO_PORT_START && addr <= IO_PORT_END)
     {

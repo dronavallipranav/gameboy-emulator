@@ -270,14 +270,22 @@ void handle_opcode(Z80_State *cpu, uint8_t opcode)
     }
 }
 
-void execute_cycle(Z80_State *cpu, FILE *logfile)
+void execute_cycle(Z80_State *cpu)
 {
+    FILE *logfile = fopen("logfile.txt", "w");
+    if (!logfile)
+    {
+        perror("Failed to open logfile");
+        exit(1);
+    }
+
     while (!cpu->Halt)
     {
         // Fetch
-        uint8_t opcode = cpu->mmu->cart_memory[cpu->PC];
+        uint8_t opcode = read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC);
         // inc PC
         cpu->PC++;
+
         // Handle and execute instr
         handle_opcode(cpu, opcode);
 
