@@ -661,7 +661,7 @@ void loadReg(Z80_State *cpu, uint8_t opcode)
    // JR
    case 0x18:
       offset = read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC);
-      cpu->PC = cpu->PC + offset;
+      cpu->PC = cpu->PC + offset + 1;
       break;
 
    case 0x20:
@@ -669,8 +669,7 @@ void loadReg(Z80_State *cpu, uint8_t opcode)
       if (cpu->AF.flags.Z == 0)
       {
          offset = read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC);
-         printf("%d\n", offset);
-         cpu->PC = cpu->PC + offset;
+         cpu->PC = cpu->PC + offset + 1;
       }
       else
       {
@@ -683,7 +682,7 @@ void loadReg(Z80_State *cpu, uint8_t opcode)
       if (cpu->AF.flags.Z == 1)
       {
          offset = read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC);
-         cpu->PC = cpu->PC + offset;
+         cpu->PC = cpu->PC + offset + 1;
       }
       else
       {
@@ -696,7 +695,7 @@ void loadReg(Z80_State *cpu, uint8_t opcode)
       if (cpu->AF.flags.C == 0)
       {
          offset = read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC);
-         cpu->PC = cpu->PC + offset;
+         cpu->PC = cpu->PC + offset + 1;
       }
       else
       {
@@ -709,7 +708,7 @@ void loadReg(Z80_State *cpu, uint8_t opcode)
       if (cpu->AF.flags.C == 1)
       {
          offset = read_byte(cpu->mmu->ppu, cpu->mmu, cpu->PC);
-         cpu->PC = cpu->PC + offset;
+         cpu->PC = cpu->PC + offset + 1;
       }
       else
       {
