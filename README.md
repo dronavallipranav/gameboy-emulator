@@ -20,8 +20,7 @@ $sudo apt-get install -y cmake libsdl2-dev libglu1-mesa-dev freeglut3-dev mesa-c
 To build:
 
 ```bash
-$cd build
-$cmake ..
+$cmake
 $make
 ```
 Running the test suite:
